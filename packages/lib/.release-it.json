@@ -1,0 +1,44 @@
+{
+	"$schema": "https://unpkg.com/release-it@19/schema/release-it.json",
+	"git": {
+		"commit": true,
+		"commitMessage": "chore: release v${version}",
+		"tag": true,
+		"tagName": "v${version}",
+		"push": true,
+		"requireCleanWorkingDir": true,
+		"requireBranch": "master"
+	},
+	"github": {
+		"release": true,
+		"releaseName": "v${version}",
+		"autoGenerate": false
+	},
+	"npm": {
+		"publish": true,
+		"publishPath": "."
+	},
+	"hooks": {
+		"before:init": ["bun run lint", "bun run test"],
+		"after:bump": "bun run build"
+	},
+	"plugins": {
+		"@release-it/conventional-changelog": {
+			"preset": {
+				"name": "conventionalcommits",
+				"types": [
+					{ "type": "feat", "section": "Features" },
+					{ "type": "fix", "section": "Bug Fixes" },
+					{ "type": "perf", "section": "Performance" },
+					{ "type": "refactor", "section": "Refactoring" },
+					{ "type": "docs", "section": "Documentation" },
+					{ "type": "chore", "hidden": true },
+					{ "type": "style", "hidden": true },
+					{ "type": "test", "hidden": true }
+				]
+			},
+			"infile": "CHANGELOG.md",
+			"header": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n"
+		}
+	}
+}

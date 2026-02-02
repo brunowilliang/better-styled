@@ -15,7 +15,10 @@
     "bench": "turbo run bench",
     "docs": "cd apps/docs && npx mintlify dev",
     "lint": "biome check ./packages/lib",
-    "format": "biome format ./packages/lib --write"
+    "format": "biome format ./packages/lib --write",
+    "release": "cd packages/lib && bun run release",
+    "release:beta": "cd packages/lib && bun run release:beta",
+    "release:dry": "cd packages/lib && bun run release:dry"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.13",

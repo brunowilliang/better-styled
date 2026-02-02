@@ -22,10 +22,12 @@
 		"clean": "rm -rf dist",
 		"build": "bun run ./build.mjs",
 		"build:types": "tsc --project tsconfig.json",
-		"publish:beta": "npm version prerelease --preid beta --no-git-tag-version && bun publish --tag beta",
-		"publish:release": "npm version patch --no-git-tag-version && bun publish",
-		"publish:minor": "npm version minor --no-git-tag-version && bun publish",
-		"publish:major": "npm version major --no-git-tag-version && bun publish"
+		"lint": "biome check .",
+		"test": "bun test",
+		"release": "release-it",
+		"release:beta": "release-it --preRelease=beta",
+		"release:alpha": "release-it --preRelease=alpha",
+		"release:dry": "release-it --dry-run"
 	},
 	"dependencies": {
 		"clsx": "^2.1.1",
@@ -33,6 +35,7 @@
 	},
 	"devDependencies": {
 		"@better-styled/testing": "workspace:*",
+		"@release-it/conventional-changelog": "^10.0.4",
 		"@types/bun": "latest",
 		"@types/react": ">=18.0.0",
 		"typescript": "^5.0.0"
