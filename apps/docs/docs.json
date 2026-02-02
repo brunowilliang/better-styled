@@ -59,6 +59,15 @@
         ]
       },
       {
+        "group": "AI Integration",
+        "pages": [
+          "ai/overview",
+          "ai/llms-txt",
+          "ai/skill-md",
+          "ai/mcp-server"
+        ]
+      },
+      {
         "group": "API Reference",
         "pages": [
           "api/styled",

@@ -1,0 +1,80 @@
+---
+title: "Connect better-styled docs to AI assistants"
+sidebarTitle: "Overview"
+description: "This documentation is optimized for AI. Connect it to Claude, ChatGPT, Cursor, and other tools for accurate code generation."
+---
+
+This documentation is optimized for AI assistants. Here's how to connect it to your favorite tools.
+
+## Available Endpoints
+
+| Endpoint | Purpose | Best For |
+|----------|---------|----------|
+| [`/llms.txt`](/ai/llms-txt) | Documentation index | Quick reference lookup |
+| [`/llms-full.txt`](/ai/llms-txt#llms-fulltxt) | Complete documentation | Full context for complex tasks |
+| [`/skill.md`](/ai/skill-md) | Capability summary | AI agents understanding what better-styled can do |
+| [MCP Server](/ai/mcp-server) | Real-time access | Direct integration with AI tools |
+
+## Quick Start
+
+<Tabs>
+  <Tab title="Claude Code">
+    ```bash
+    claude mcp add better-styled https://better-styled.com --transport sse
+    ```
+  </Tab>
+  <Tab title="Cursor">
+    Add to Cursor settings:
+    ```
+    https://better-styled.com
+    ```
+  </Tab>
+  <Tab title="ChatGPT">
+    Paste this URL when starting a conversation:
+    ```
+    https://better-styled.com/llms-full.txt
+    ```
+  </Tab>
+</Tabs>
+
+## What Each File Does
+
+<CardGroup cols={2}>
+  <Card title="llms.txt" icon="list" href="/ai/llms-txt">
+    Lightweight index of all pages. AI tools use this to find relevant information quickly.
+  </Card>
+  <Card title="llms-full.txt" icon="file-lines" href="/ai/llms-txt#llms-fulltxt">
+    Complete documentation in one file. Use for complex tasks that need full context.
+  </Card>
+  <Card title="skill.md" icon="robot" href="/ai/skill-md">
+    Structured capability summary. Tells agents what better-styled can do and how to use it.
+  </Card>
+  <Card title="MCP Server" icon="plug" href="/ai/mcp-server">
+    Real-time access via Model Context Protocol. Direct integration with AI tools.
+  </Card>
+</CardGroup>
+
+## Example Prompts
+
+Once connected, try these prompts:
+
+```
+Using better-styled, create a Card component with:
+- Variants: size (sm, md, lg) and variant (elevated, outlined)
+- Slots: Header, Body, Footer
+- Context propagation so children inherit the variant
+```
+
+```
+Convert this CVA component to better-styled:
+[paste your CVA code]
+```
+
+```
+Create a React Native Button using better-styled with NativeWind.
+Include size variants and a Text slot.
+```
+
+<Card title="MCP Server Setup" icon="arrow-right" href="/ai/mcp-server">
+  Get started with MCP integration
+</Card>

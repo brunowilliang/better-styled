@@ -1,0 +1,128 @@
+---
+title: "MCP Server for real-time documentation access"
+sidebarTitle: "MCP Server"
+description: "Connect better-styled documentation directly to AI tools via Model Context Protocol."
+---
+
+## What is MCP?
+
+[Model Context Protocol](https://modelcontextprotocol.io/) (MCP) is an open standard that lets AI tools access external data sources in real-time.
+
+With MCP, your AI assistant can fetch the latest better-styled documentation directly, without you needing to copy/paste.
+
+## Claude Code
+
+The easiest way to add better-styled docs to Claude Code:
+
+```bash
+claude mcp add better-styled https://better-styled.com --transport sse
+```
+
+That's it! Claude Code now has access to the full documentation.
+
+### Manual Configuration
+
+Or add to your project's `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "better-styled": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic-ai/mcp-server-fetch",
+        "https://better-styled.com"
+      ]
+    }
+  }
+}
+```
+
+## Claude Desktop
+
+Add to your `claude_desktop_config.json`:
+
+<Tabs>
+  <Tab title="macOS">
+    File location: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+    ```json
+    {
+      "mcpServers": {
+        "better-styled": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "@anthropic-ai/mcp-server-fetch",
+            "https://better-styled.com"
+          ]
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Windows">
+    File location: `%APPDATA%\Claude\claude_desktop_config.json`
+
+    ```json
+    {
+      "mcpServers": {
+        "better-styled": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "@anthropic-ai/mcp-server-fetch",
+            "https://better-styled.com"
+          ]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Restart Claude Desktop after making changes.
+
+## Cursor
+
+In Cursor settings, navigate to **Features → MCP Servers** and add:
+
+```
+https://better-styled.com
+```
+
+## Verifying the Connection
+
+After setup, ask your AI assistant:
+
+```
+What is better-styled and how do I create a Button component?
+```
+
+If configured correctly, it will fetch the documentation and provide accurate answers.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="MCP server not connecting">
+    1. Ensure you have Node.js installed
+    2. Check that npx is in your PATH
+    3. Try running the command manually: `npx -y @anthropic-ai/mcp-server-fetch https://better-styled.com`
+  </Accordion>
+
+  <Accordion title="Outdated information">
+    MCP fetches documentation in real-time, so it should always be current. If you see outdated info, try restarting your AI tool.
+  </Accordion>
+
+  <Accordion title="Claude Code command not working">
+    Make sure you have Claude Code v1.0.3 or later. Update with:
+    ```bash
+    npm update -g @anthropic-ai/claude-code
+    ```
+  </Accordion>
+</AccordionGroup>
+
+<Card title="Back to Overview" icon="arrow-left" href="/ai/overview">
+  See all AI integration options
+</Card>

@@ -1,0 +1,129 @@
+---
+title: "skill.md capability file"
+sidebarTitle: "skill.md"
+description: "A structured file that tells AI agents what better-styled can do and how to use it correctly."
+---
+
+## What is skill.md?
+
+A machine-readable capability file following the [agentskills.io](https://agentskills.io) specification. It tells AI agents:
+
+- **What** better-styled can do
+- **When** to use it
+- **How** to generate correct code
+
+```
+https://better-styled.com/skill.md
+```
+
+## Why skill.md?
+
+| File | Purpose |
+|------|---------|
+| llms.txt | Directory - where to find information |
+| skill.md | Capability summary - what actions are possible |
+
+AI agents process skill.md to understand your product's capabilities before taking actions.
+
+## What's Inside
+
+The skill.md includes:
+
+<AccordionGroup>
+  <Accordion title="Metadata">
+    ```yaml
+    name: better-styled
+    description: Create type-safe styled components with variants...
+    license: MIT
+    compatibility: React, React Native, TypeScript, Tailwind CSS
+    ```
+  </Accordion>
+
+  <Accordion title="When to Use">
+    - Variant-based components
+    - Context propagation (parent → child variants)
+    - Compound components with slots
+    - React Native with NativeWind/Uniwind
+  </Accordion>
+
+  <Accordion title="Core API Examples">
+    Complete code examples for:
+    - `styled()` - creating components
+    - `createStyledContext()` - variant propagation
+    - `withSlots()` - compound components
+    - Utility functions
+  </Accordion>
+
+  <Accordion title="Code Patterns">
+    Rules for generating correct code:
+    - Use arrow functions (not React.FC)
+    - Let TypeScript infer types
+    - Context patterns for design systems
+  </Accordion>
+</AccordionGroup>
+
+## Using skill.md
+
+### With AI Assistants
+
+Reference it in your prompts:
+
+```
+Use the skill.md at https://better-styled.com/skill.md
+to create a Button component with size variants.
+```
+
+### With Cursor / Copilot
+
+Add to `.cursorrules` or `.github/copilot-instructions.md`:
+
+```markdown
+When working with better-styled:
+
+1. Import from "better-styled"
+2. Use styled() for creating components
+3. Use createStyledContext() for variant propagation
+4. Use withSlots() for compound components
+5. Never use React.FC - use arrow functions
+6. Types are inferred automatically - don't add manual types
+
+Reference: https://better-styled.com/skill.md
+```
+
+### With Context7
+
+better-styled is indexed by [Context7](https://context7.com), allowing AI tools to fetch up-to-date documentation automatically.
+
+```
+@context7 how do I create a Button with better-styled?
+```
+
+## Tips for AI Assistants
+
+<AccordionGroup>
+  <Accordion title="Always use context for parent-child relationships">
+    When components have children that should inherit variants (like Button with Icon), use `createStyledContext()`.
+  </Accordion>
+
+  <Accordion title="Prefer slots over separate exports">
+    Instead of exporting `CardRoot`, `CardHeader`, `CardBody` separately, use `withSlots()` to create `Card.Header`, `Card.Body`.
+  </Accordion>
+
+  <Accordion title="Don't add unnecessary types">
+    TypeScript infers variant types automatically. Don't add manual type annotations unless needed.
+  </Accordion>
+
+  <Accordion title="Use arrow functions for components">
+    ```tsx
+    // Correct
+    const Button = ({ children }: ButtonProps) => { ... }
+
+    // Incorrect
+    const Button: React.FC<ButtonProps> = ({ children }) => { ... }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+<Card title="Next: MCP Server" icon="arrow-right" href="/ai/mcp-server">
+  Real-time documentation access
+</Card>
