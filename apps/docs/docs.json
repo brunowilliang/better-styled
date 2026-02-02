@@ -1,50 +1,95 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "maple",
-  "name": "better-styled",
-  "description": "A powerful library for creating React/React Native components with variants and slots",
+  "theme": "mint",
+  "name": "Better-Styled",
+  "description": "Documentation for better-styled",
   "colors": {
-    "primary": "#3B82F6",
-    "light": "#F8FAFC",
-    "dark": "#0F172A"
+    "primary": "#623791",
+    "light": "#623791",
+    "dark": "#623791"
   },
-  "logo": {
-    "light": "/logo.svg",
-    "dark": "/logo.svg",
-    "href": "https://better-styled.com"
-  },
+  "favicon": "logo/favicon.svg",
   "navigation": {
-    "tabs": [
+    "groups": [
       {
-        "tab": "Documentation",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "icon": "rocket",
-            "pages": [
-              "index"
-            ]
-          }
+        "group": "Getting Started",
+        "root": "index",
+        "pages": [
+          "index"
+        ]
+      },
+      {
+        "group": "Authentication",
+        "pages": [
+          "docs/login",
+          "docs/sign-up",
+          "docs/magic-link",
+          "docs/forgot-password"
+        ]
+      },
+      {
+        "group": "Pages",
+        "pages": [
+          "docs/create-page",
+          "docs/edit-page",
+          "docs/deactivate-page",
+          "docs/reactivate-page"
+        ]
+      },
+      {
+        "group": "Transactions",
+        "pages": [
+          "docs/start-donation",
+          "docs/product-mode",
+          "docs/send-receipt"
+        ]
+      },
+      {
+        "group": "Troubleshooting",
+        "pages": [
+          "docs/troubleshooting-discover-readers"
         ]
       }
     ]
   },
+  "logo": {
+    "light": "/logo/logo.svg",
+    "dark": "/logo/logo.svg"
+  },
   "navbar": {
     "links": [
       {
-        "label": "GitHub",
-        "href": "https://github.com/brunowilliang/better-styled"
+        "label": "Support",
+        "href": "mailto:helpdesk@idonate.ie ",
+        "icon": "envelope"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "npm",
-      "href": "https://www.npmjs.com/package/better-styled"
+      "label": "Go to iDonate.ie",
+      "href": "https://idonate.ie"
     }
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/brunowilliang/better-styled"
+      "facebook": "https://www.facebook.com/iDonate.ie",
+      "instagram": "https://www.instagram.com/idonate.ie/",
+      "x": "https://x.com/iDonate_ie",
+      "linkedin": "https://www.linkedin.com/company/idonate-ireland/"
     }
+  },
+  "errors": {
+    "404": {
+      "title": "Page not found",
+      "description": "The page you are looking for does not exist. Please check the URL and try again.",
+      "redirect": false
+    }
+  },
+  "background": {
+    "color": {
+      "light": "#F3F6F8",
+      "dark": "#0E0F0E"
+    },
+    "decoration": "grid"
   }
 }
