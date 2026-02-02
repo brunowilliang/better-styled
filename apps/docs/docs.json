@@ -21,16 +21,19 @@
     }
   },
   "background": {
-    "color": {
-      "light": "#EFE7F2",
-      "dark": "#080409"
-    },
     "decoration": "grid"
   },
   "logo": {
     "light": "/assets/logo_light.svg",
-    "dark": "/assets/logo_dark.svg"
+    "dark": "/assets/logo_dark.svg",
+    "href": "/introduction"
   },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/introduction"
+    }
+  ],
   "navigation": {
     "groups": [
       {
