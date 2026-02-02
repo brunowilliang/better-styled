@@ -17,7 +17,7 @@
 	"npm": false,
 	"hooks": {
 		"before:init": ["cd packages/lib && bun run lint"],
-		"after:bump": "npm version ${version} --no-git-tag-version --prefix packages/lib && cd packages/lib && bun run build",
+		"after:bump": "npm version ${version} --no-git-tag-version --allow-same-version --prefix packages/lib && cd packages/lib && bun run build",
 		"after:release": "cd packages/lib && npm publish --tag ${preReleaseId} --auth-type=web"
 	},
 	"plugins": {
