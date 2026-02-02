@@ -1,14 +1,28 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Better-Styled",
-  "description": "Documentation for better-styled",
+  "name": "Better Styled",
+  "description": "Documentation for better styled",
+  "favicon": "./assets/favicon.svg",
+  "fonts": {
+    "family": "Geist"
+  },
   "colors": {
     "primary": "#623791",
     "light": "#623791",
     "dark": "#623791"
   },
-  "favicon": "logo/favicon.svg",
+  "background": {
+    "color": {
+      "light": "#EFE7F2",
+      "dark": "#080409"
+    },
+    "decoration": "grid"
+  },
+  "logo": {
+    "light": "./assets/logo_light.svg",
+    "dark": "./assets/logo_dark.svg"
+  },
   "navigation": {
     "groups": [
       {
@@ -52,30 +66,24 @@
       }
     ]
   },
-  "logo": {
-    "light": "/logo/logo.svg",
-    "dark": "/logo/logo.svg"
-  },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:helpdesk@idonate.ie ",
-        "icon": "envelope"
+        "href": "mailto:eu@brunowillian.com ",
+        "icon": "github"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Go to iDonate.ie",
-      "href": "https://idonate.ie"
+      "label": "Go to Github",
+      "href": "https://github.com/brunowilliang/better-styled"
     }
   },
   "footer": {
     "socials": {
-      "facebook": "https://www.facebook.com/iDonate.ie",
-      "instagram": "https://www.instagram.com/idonate.ie/",
-      "x": "https://x.com/iDonate_ie",
-      "linkedin": "https://www.linkedin.com/company/idonate-ireland/"
+      "x": "https://x.com/Brunowgarcia",
+      "linkedin": "https://linkedin.com/in/brunowilliang"
     }
   },
   "errors": {
@@ -84,12 +92,5 @@
       "description": "The page you are looking for does not exist. Please check the URL and try again.",
       "redirect": false
     }
-  },
-  "background": {
-    "color": {
-      "light": "#F3F6F8",
-      "dark": "#0E0F0E"
-    },
-    "decoration": "grid"
   }
 }
