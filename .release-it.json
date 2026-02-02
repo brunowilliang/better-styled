@@ -16,7 +16,7 @@
 	},
 	"npm": {
 		"publish": true,
-		"publishPath": "packages/lib"
+		"publishPath": "./packages/lib"
 	},
 	"hooks": {
 		"before:init": ["cd packages/lib && bun run lint"],
