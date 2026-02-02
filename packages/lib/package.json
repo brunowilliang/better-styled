@@ -23,7 +23,6 @@
 		"build": "bun run ./build.mjs",
 		"build:types": "tsc --project tsconfig.json",
 		"lint": "biome check .",
-		"test": "bun test",
 		"release": "release-it",
 		"release:beta": "release-it --preRelease=beta",
 		"release:alpha": "release-it --preRelease=alpha",

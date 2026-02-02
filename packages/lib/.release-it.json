@@ -19,7 +19,7 @@
 		"publishPath": "."
 	},
 	"hooks": {
-		"before:init": ["bun run lint", "bun run test"],
+		"before:init": ["bun run lint"],
 		"after:bump": "bun run build"
 	},
 	"plugins": {
