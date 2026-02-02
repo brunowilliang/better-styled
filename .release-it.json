@@ -18,7 +18,7 @@
 	"hooks": {
 		"before:init": ["cd packages/lib && bun run lint"],
 		"after:bump": "cd packages/lib && bun run build",
-		"after:release": "cd packages/lib && npm publish --tag ${preReleaseId}"
+		"after:release": "cd packages/lib && npm publish --tag ${preReleaseId} --auth-type=web"
 	},
 	"plugins": {
 		"@release-it/conventional-changelog": {
