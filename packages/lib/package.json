@@ -22,11 +22,7 @@
 		"clean": "rm -rf dist",
 		"build": "bun run ./build.mjs",
 		"build:types": "tsc --project tsconfig.json",
-		"lint": "biome check .",
-		"release": "release-it",
-		"release:beta": "release-it --preRelease=beta",
-		"release:alpha": "release-it --preRelease=alpha",
-		"release:dry": "release-it --dry-run"
+		"lint": "biome check ."
 	},
 	"dependencies": {
 		"clsx": "^2.1.1",
@@ -34,7 +30,6 @@
 	},
 	"devDependencies": {
 		"@better-styled/testing": "workspace:*",
-		"@release-it/conventional-changelog": "^10.0.4",
 		"@types/bun": "latest",
 		"@types/react": ">=18.0.0",
 		"typescript": "^5.0.0"

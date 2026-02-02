@@ -16,12 +16,13 @@
     "docs": "cd apps/docs && npx mintlify dev",
     "lint": "biome check ./packages/lib",
     "format": "biome format ./packages/lib --write",
-    "release": "cd packages/lib && bun run release",
-    "release:beta": "cd packages/lib && bun run release:beta",
-    "release:dry": "cd packages/lib && bun run release:dry"
+    "release": "release-it",
+    "release:beta": "release-it --preRelease=beta",
+    "release:dry": "release-it --dry-run"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.13",
+    "@release-it/conventional-changelog": "^10.0.4",
     "turbo": "^2.5.0",
     "typescript": "^5.0.0"
   },
