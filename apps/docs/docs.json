@@ -58,7 +58,8 @@
         "group": "Guides",
         "pages": [
           "guides/react-native",
-          "guides/typescript"
+          "guides/typescript",
+          "guides/best-practices"
         ]
       },
       {

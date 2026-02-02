@@ -89,30 +89,41 @@ Apply styles when specific variant combinations occur.
 ```tsx
 const Button = styled("button", {
   variants: {
-    intent: {
-      primary: { className: "bg-blue-600" },
-      danger: { className: "bg-red-600" },
+    color: {
+      primary: { className: "text-blue-600" },
+      danger: { className: "text-red-600" },
     },
-    isOutlined: {
-      true: { className: "bg-transparent border-2" },
+    variant: {
+      solid: { className: "text-white" },
+      outline: { className: "bg-transparent border-2" },
     },
   },
   compoundVariants: [
     {
-      intent: "primary",
-      isOutlined: true,
-      props: { className: "border-blue-600 text-blue-600" },
+      color: "primary",
+      variant: "solid",
+      props: { className: "bg-blue-600" },
     },
     {
-      intent: "danger",
-      isOutlined: true,
-      props: { className: "border-red-600 text-red-600" },
+      color: "primary",
+      variant: "outline",
+      props: { className: "border-blue-600" },
+    },
+    {
+      color: "danger",
+      variant: "solid",
+      props: { className: "bg-red-600" },
+    },
+    {
+      color: "danger",
+      variant: "outline",
+      props: { className: "border-red-600" },
     },
   ],
 });
 ```
 
-When `intent="primary"` AND `isOutlined={true}`, the compound variant kicks in.
+When `color="primary"` AND `variant="outline"`, the matching compound variant applies.
 
 ### `context`
 

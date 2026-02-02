@@ -1,0 +1,341 @@
+---
+title: "Patterns and recommendations for better-styled"
+sidebarTitle: "Best Practices"
+description: "Recommended patterns, performance tips, and common pitfalls to avoid."
+---
+
+## Component Organization
+
+### Single-File Pattern
+
+For compound components, define everything in one file:
+
+```tsx
+// Button.tsx
+import { styled, createStyledContext, withSlots } from "better-styled";
+
+// 1. Context first
+const ButtonContext = createStyledContext({
+  size: ["sm", "md", "lg"],
+  variant: ["solid", "outline", "ghost"],
+});
+
+// 2. Root component
+const ButtonRoot = styled("button", {
+  context: ButtonContext,
+  base: { className: "inline-flex items-center gap-2 font-medium" },
+  variants: {
+    size: {
+      sm: { className: "h-8 px-3 text-sm" },
+      md: { className: "h-10 px-4 text-base" },
+      lg: { className: "h-12 px-6 text-lg" },
+    },
+    variant: {
+      solid: { className: "bg-blue-600 text-white" },
+      outline: { className: "border-2 border-blue-600 text-blue-600" },
+      ghost: { className: "text-blue-600 hover:bg-blue-50" },
+    },
+  },
+  defaultVariants: {
+    size: "md",
+    variant: "solid",
+  },
+});
+
+// 3. Slots
+const ButtonIcon = styled("span", {
+  context: ButtonContext,
+  variants: {
+    size: {
+      sm: { className: "w-4 h-4" },
+      md: { className: "w-5 h-5" },
+      lg: { className: "w-6 h-6" },
+    },
+  },
+});
+
+const ButtonLabel = styled("span", {
+  context: ButtonContext,
+  variants: {
+    size: {
+      sm: { className: "text-sm" },
+      md: { className: "text-base" },
+      lg: { className: "text-lg" },
+    },
+  },
+});
+
+// 4. Export compound component
+export const Button = withSlots(ButtonRoot, {
+  Icon: ButtonIcon,
+  Label: ButtonLabel,
+});
+```
+
+---
+
+## Naming Conventions
+
+### Variant Names
+
+Use descriptive, semantic names:
+
+```tsx
+// ✅ Good - describes what it does
+variants: {
+  variant: { solid, outline, ghost, danger, "danger-soft" },
+  size: { sm, md, lg, xl },
+  isDisabled: { true: ... },
+  isLoading: { true: ... },
+}
+
+// ❌ Avoid - too generic or unclear
+variants: {
+  type: { a, b, c },
+  s: { 1, 2, 3 },
+  disabled: { true: ... },  // Shadows native prop
+}
+```
+
+### Boolean Variants
+
+Prefix with `is` or `has` to avoid shadowing native props:
+
+```tsx
+// ✅ Good
+isDisabled, isLoading, isActive, hasIcon
+
+// ❌ Bad - shadows native props
+disabled, loading, active
+```
+
+### Slot Names
+
+Use PascalCase, matching the visual role:
+
+```tsx
+// ✅ Good
+Button.Icon, Button.Label
+Card.Header, Card.Body, Card.Footer
+Dialog.Title, Dialog.Content, Dialog.Actions
+```
+
+---
+
+## Performance
+
+### Avoid Inline Definitions
+
+Define styled components outside render:
+
+```tsx
+// ✅ Good - config is stable
+const Button = styled("button", {
+  variants: {
+    size: { sm: { className: "text-sm" } },
+  },
+});
+
+// ❌ Bad - recreates config every render
+const MyComponent = () => {
+  const Button = styled("button", {
+    variants: {
+      size: { sm: { className: "text-sm" } },
+    },
+  });
+  return <Button />;
+};
+```
+
+### Context Scope
+
+Only use context when you need variant propagation. For standalone components, skip it:
+
+```tsx
+// ✅ Needs context - parent-child relationship
+const ButtonContext = createStyledContext({ size: ["sm", "lg"] });
+const Button = styled("button", { context: ButtonContext, ... });
+const ButtonIcon = styled("span", { context: ButtonContext, ... });
+
+// ✅ No context needed - standalone component
+const Badge = styled("span", {
+  variants: { color: { gray: {}, red: {} } },
+});
+```
+
+### Minimize Compound Variants
+
+Compound variants are powerful but add complexity. Use sparingly:
+
+```tsx
+// ✅ Good - few, specific combinations
+compoundVariants: [
+  { variant: "outline", color: "primary", props: { className: "border-blue-600" } },
+  { variant: "outline", color: "danger", props: { className: "border-red-600" } },
+]
+
+// ❌ Avoid - too many combinations (consider splitting into smaller components)
+compoundVariants: [
+  { size: "sm", variant: "outline", color: "primary", ... },
+  { size: "sm", variant: "outline", color: "secondary", ... },
+  { size: "sm", variant: "solid", color: "primary", ... },
+  // ... 20 more combinations
+]
+```
+
+---
+
+## Common Pitfalls
+
+### Don't Nest Contexts Unnecessarily
+
+Each context adds a provider. Keep the tree shallow:
+
+```tsx
+// ✅ Good - flat structure
+<Card>
+  <Card.Header />
+  <Card.Body />
+</Card>
+
+// ❌ Avoid - unnecessary nesting
+<Card>
+  <CardHeaderContext>
+    <Card.Header>
+      <CardTitleContext>
+        <Card.Title />
+      </CardTitleContext>
+    </Card.Header>
+  </CardHeaderContext>
+</Card>
+```
+
+### Variant vs Intent
+
+Don't create separate boolean variants when you can use a single `variant` or `intent`:
+
+```tsx
+// ✅ Good - single variant with all options
+variants: {
+  variant: {
+    solid: { className: "bg-blue-600 text-white" },
+    outline: { className: "border-2 border-blue-600 bg-transparent" },
+    ghost: { className: "bg-transparent hover:bg-blue-50" },
+  },
+}
+
+// ❌ Avoid - separate boolean for each style
+variants: {
+  isSolid: { true: { className: "bg-blue-600" } },
+  isOutline: { true: { className: "border-2" } },
+  isGhost: { true: { className: "bg-transparent" } },
+}
+```
+
+---
+
+## Design System Tips
+
+### Consistent Variant Values
+
+Use the same variant names across components:
+
+```tsx
+// ✅ Good - consistent naming
+Button: size: ["sm", "md", "lg"]
+Input: size: ["sm", "md", "lg"]
+Select: size: ["sm", "md", "lg"]
+
+// ❌ Bad - inconsistent
+Button: size: ["small", "medium", "large"]
+Input: inputSize: ["s", "m", "l"]
+Select: scale: [1, 2, 3]
+```
+
+### Default Variants
+
+Always provide sensible defaults:
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    size: { sm: {}, md: {}, lg: {} },
+    variant: { solid: {}, outline: {}, ghost: {} },
+  },
+  defaultVariants: {
+    size: "md",
+    variant: "solid",
+  },
+});
+
+// Clean usage without props
+<Button>Click me</Button>
+```
+
+### Recommended Variant Options
+
+Common patterns for design systems:
+
+```tsx
+// Size
+size: ["xs", "sm", "md", "lg", "xl"]
+
+// Variant/Intent
+variant: ["solid", "outline", "ghost", "link"]
+// or with semantic colors
+intent: ["primary", "secondary", "success", "warning", "danger"]
+
+// Color (when separate from intent)
+color: ["neutral", "primary", "secondary", "success", "warning", "danger"]
+
+// Boolean states
+isDisabled, isLoading, isActive, isSelected, hasIcon
+```
+
+---
+
+## React Native Specific
+
+### Use `isDisabled` Pattern
+
+```tsx
+// ✅ Good - works with Pressable
+const Button = styled(Pressable, {
+  variants: {
+    isDisabled: {
+      true: { className: "opacity-50", disabled: true },
+    },
+  },
+});
+
+<Button isDisabled>Disabled</Button>
+```
+
+### Pressable States
+
+Leverage function composition for press states:
+
+```tsx
+const Button = styled(Pressable, {
+  base: {
+    className: ({ pressed }) =>
+      cn("px-4 py-2 rounded", pressed && "opacity-80"),
+  },
+});
+```
+
+### Platform-Specific Styles
+
+Use NativeWind's platform prefixes:
+
+```tsx
+const Card = styled(View, {
+  base: {
+    className: "p-4 rounded-xl ios:shadow-sm android:elevation-2",
+  },
+});
+```
+
+<Card title="TypeScript Guide" icon="arrow-right" href="/guides/typescript">
+  Deep dive into type inference
+</Card>

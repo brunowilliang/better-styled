@@ -12,15 +12,19 @@ metadata:
 
 # better-styled
 
-A library for creating type-safe styled components with variant support for React and React Native.
+A library for creating type-safe styled components with variant support for
+React and React Native.
 
 ## When to Use
 
 Use better-styled when you need:
 
-- **Variant-based components** - Define size, color, state variants with type safety
-- **Context propagation** - Parent components automatically share variants with children (e.g., Button size affects Icon size)
-- **Compound components** - Build components with dot notation like `<Card.Header>`
+- **Variant-based components** - Define size, color, state variants with type
+  safety
+- **Context propagation** - Parent components automatically share variants with
+  children (e.g., Button size affects Icon size)
+- **Compound components** - Build components with dot notation like
+  `<Card.Header>`
 - **React Native support** - Same API works with NativeWind or Uniwind
 - **Tailwind conflict resolution** - Automatic class merging with tailwind-merge
 
@@ -59,7 +63,7 @@ const Button = styled("button", {
 });
 
 // Usage
-<Button size="lg" variant="secondary">Click me</Button>
+<Button size="lg" variant="secondary">Click me</Button>;
 ```
 
 ### createStyledContext()
@@ -67,7 +71,7 @@ const Button = styled("button", {
 Creates a context for sharing variants between parent and child components.
 
 ```tsx
-import { styled, createStyledContext } from "better-styled";
+import { createStyledContext, styled } from "better-styled";
 
 const ButtonContext = createStyledContext({
   size: ["sm", "md", "lg"],
@@ -100,7 +104,7 @@ const ButtonIcon = styled("span", {
 <Button size="lg">
   <ButtonIcon>★</ButtonIcon>
   Submit
-</Button>
+</Button>;
 ```
 
 ### withSlots()
@@ -131,7 +135,7 @@ export const Card = withSlots(CardRoot, {
 <Card>
   <Card.Header>Title</Card.Header>
   <Card.Body>Content here</Card.Body>
-</Card>
+</Card>;
 ```
 
 ### Utility Functions
@@ -148,7 +152,7 @@ mergeStyles({ padding: 16 }, { padding: 32 }); // → { padding: 32 }
 // mergeFinalProps() - Merge props with special handling
 mergeFinalProps(
   { className: "p-4", onClick: () => console.log("a") },
-  { className: "p-8", onClick: () => console.log("b") }
+  { className: "p-8", onClick: () => console.log("b") },
 );
 // → { className: "p-8", onClick: [composed function] }
 ```
@@ -159,7 +163,7 @@ Same API, just use React Native components:
 
 ```tsx
 import { Pressable, Text } from "react-native";
-import { styled, createStyledContext, withSlots } from "better-styled";
+import { createStyledContext, styled, withSlots } from "better-styled";
 
 const Button = styled(Pressable, {
   base: { className: "rounded-lg px-4 py-2 bg-blue-600" },
@@ -180,7 +184,7 @@ export const StyledButton = withSlots(Button, { Text: ButtonText });
 // Usage
 <StyledButton size="lg">
   <StyledButton.Text>Press me</StyledButton.Text>
-</StyledButton>
+</StyledButton>;
 ```
 
 Requires NativeWind or Uniwind for className support.
@@ -229,20 +233,63 @@ When generating code with better-styled, follow these patterns:
 ### Component Declaration
 
 ```tsx
-// Correct - Arrow function without React.FC
+// ✅ Correct - Arrow function without React.FC
 const Button = ({ children, ...props }: ButtonProps) => {
   return <StyledButton {...props}>{children}</StyledButton>;
 };
 
-// Incorrect - Don't use React.FC
+// ❌ Incorrect - Never use React.FC
 const Button: React.FC<ButtonProps> = ({ children }) => { ... };
 ```
 
-### Type Extraction
+### Type Inference
+
+Let TypeScript infer types automatically. Don't add manual type annotations:
 
 ```tsx
-// Extract props type from styled component
+// ✅ Correct - TypeScript infers variant types
+const Button = styled("button", {
+  variants: {
+    size: { sm: {}, md: {}, lg: {} },
+  },
+});
+
+// ✅ Extract props type when needed
 type ButtonProps = React.ComponentProps<typeof Button>;
+```
+
+### Variant Naming
+
+Use semantic names. Prefer `variant` over boolean flags:
+
+```tsx
+// ✅ Correct - Single variant with all options
+variants: {
+  variant: {
+    solid: { className: "bg-blue-600 text-white" },
+    outline: { className: "border-2 border-blue-600 bg-transparent" },
+    ghost: { className: "bg-transparent hover:bg-blue-50" },
+  },
+}
+
+// ❌ Incorrect - Separate booleans for each style
+variants: {
+  isSolid: { true: { ... } },
+  isOutline: { true: { ... } },
+  isGhost: { true: { ... } },
+}
+```
+
+### Boolean Variants
+
+Prefix with `is` or `has` to avoid shadowing native props:
+
+```tsx
+// ✅ Correct
+isDisabled, isLoading, isActive, hasIcon;
+
+// ❌ Incorrect - Shadows native props
+disabled, loading, active;
 ```
 
 ### Context Pattern for Design Systems
@@ -251,20 +298,49 @@ type ButtonProps = React.ComponentProps<typeof Button>;
 // 1. Create shared context
 const ComponentContext = createStyledContext({
   size: ["sm", "md", "lg"],
-  variant: ["default", "outline"],
+  variant: ["solid", "outline", "ghost"],
 });
 
 // 2. Use in parent (provides context)
 const Parent = styled("div", {
   context: ComponentContext,
-  variants: { /* ... */ },
+  variants: {/* ... */},
 });
 
 // 3. Use in children (consumes context)
 const Child = styled("span", {
   context: ComponentContext,
-  variants: { /* ... */ },
+  variants: {/* ... */},
 });
+```
+
+### Single-File Organization
+
+Define context, root, and slots in the same file:
+
+```tsx
+// Button.tsx
+import { styled, createStyledContext, withSlots } from "better-styled";
+
+// 1. Context
+const ButtonContext = createStyledContext({
+  size: ["sm", "md", "lg"],
+});
+
+// 2. Root
+const ButtonRoot = styled("button", {
+  context: ButtonContext,
+  variants: { size: { ... } },
+});
+
+// 3. Slots
+const ButtonIcon = styled("span", {
+  context: ButtonContext,
+  variants: { size: { ... } },
+});
+
+// 4. Export
+export const Button = withSlots(ButtonRoot, { Icon: ButtonIcon });
 ```
 
 ## Props Merge Priority
@@ -276,9 +352,9 @@ const Child = styled("span", {
 
 ## Key Differentiators
 
-| Feature | better-styled | Other libs (CVA, TV) |
-|---------|---------------|----------------------|
-| Context propagation | ✅ Built-in | ❌ Manual |
-| Function composition | ✅ Auto-composed | ❌ Override |
-| React Native | ✅ Native | ⚠️ Via NativeWind |
-| Output | React Component | Class string |
+| Feature              | better-styled    | Other libs (CVA, TV) |
+| -------------------- | ---------------- | -------------------- |
+| Context propagation  | ✅ Built-in      | ❌ Manual            |
+| Function composition | ✅ Auto-composed | ❌ Override          |
+| React Native         | ✅ Native        | ⚠️ Via NativeWind    |
+| Output               | React Component  | Class string         |

@@ -3,9 +3,11 @@ import { Pressable, Text } from "react-native";
 
 // Create context with arrays of options
 // Use ["boolean"] for boolean variants
+const sizes = ["sm", "md", "lg"];
+
 const ButtonContext = createStyledContext({
 	variant: ["primary", "secondary", "outline"],
-	size: ["sm", "md", "lg"],
+	size: sizes,
 	isDisabled: ["boolean"],
 });
 
