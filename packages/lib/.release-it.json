@@ -19,7 +19,9 @@
 		"publishPath": "."
 	},
 	"hooks": {
-		"before:init": ["bun run lint"],
+		"before:init": [
+			"bun run lint"
+		],
 		"after:bump": "bun run build"
 	},
 	"plugins": {
@@ -27,14 +29,38 @@
 			"preset": {
 				"name": "conventionalcommits",
 				"types": [
-					{ "type": "feat", "section": "Features" },
-					{ "type": "fix", "section": "Bug Fixes" },
-					{ "type": "perf", "section": "Performance" },
-					{ "type": "refactor", "section": "Refactoring" },
-					{ "type": "docs", "section": "Documentation" },
-					{ "type": "chore", "hidden": true },
-					{ "type": "style", "hidden": true },
-					{ "type": "test", "hidden": true }
+					{
+						"type": "feat",
+						"section": "Features"
+					},
+					{
+						"type": "fix",
+						"section": "Bug Fixes"
+					},
+					{
+						"type": "perf",
+						"section": "Performance"
+					},
+					{
+						"type": "refactor",
+						"section": "Refactoring"
+					},
+					{
+						"type": "docs",
+						"section": "Documentation"
+					},
+					{
+						"type": "chore",
+						"hidden": true
+					},
+					{
+						"type": "style",
+						"hidden": true
+					},
+					{
+						"type": "test",
+						"hidden": true
+					}
 				]
 			},
 			"infile": "../../CHANGELOG.md",
