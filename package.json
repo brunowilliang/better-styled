@@ -2,7 +2,7 @@
   "name": "better-styled-monorepo",
   "private": true,
   "packageManager": "bun@1.3.8",
-  "version": "1.0.0-beta.4",
+  "version": "1.0.0-beta.6",
   "workspaces": [
     "packages/*",
     "!packages/lib-old",
