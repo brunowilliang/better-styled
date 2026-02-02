@@ -1,0 +1,39 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+.astro
+.turbo
+
+# Lock files
+bun.lock
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Test coverage
+coverage
+
+# Cache
+.cache
+*.tsbuildinfo
+
+# Legacy/deprecated
+lib-v2-old
+lib

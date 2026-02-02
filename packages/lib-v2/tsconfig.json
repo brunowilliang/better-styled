@@ -1,0 +1,26 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"types": ["@types/bun"],
+		"allowJs": true,
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noPropertyAccessFromIndexSignature": false,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"moduleDetection": "force",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"declarationMap": true,
+		"rootDir": "./"
+	},
+	"include": ["index.ts", "src/**/*.ts", "src/**/*.tsx", "../testing/matchers.d.ts"],
+	"exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,23 @@
+{
+	"name": "@better-styled/benchmarks",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Benchmarks for better-styled library",
+	"type": "module",
+	"scripts": {
+		"bench": "bun run src/index.ts",
+		"bench:styled": "bun run src/styled.bench.ts",
+		"bench:context": "bun run src/createStyledContext.bench.ts",
+		"bench:slots": "bun run src/withSlots.bench.ts",
+		"bench:integration": "bun run src/integration.bench.ts"
+	},
+	"dependencies": {
+		"mitata": "^1.0.34"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@types/react": ">=18.0.0",
+		"better-styled": "workspace:*",
+		"react": "^19.0.0"
+	}
+}

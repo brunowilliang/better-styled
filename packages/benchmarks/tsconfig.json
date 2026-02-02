@@ -1,0 +1,26 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "ESNext",
+		"outDir": "./dist",
+		"types": ["@types/bun", "@types/react"],
+		"allowJs": true,
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": false,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noPropertyAccessFromIndexSignature": false,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"moduleDetection": "force",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
+		"rootDir": "./"
+	},
+	"include": ["src/**/*.ts", "src/**/*.tsx"],
+	"exclude": ["node_modules", "dist"]
+}
