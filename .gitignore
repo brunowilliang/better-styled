@@ -37,3 +37,4 @@ coverage
 # Legacy/deprecated
 lib-v2-old
 lib-old
+.npmrc
