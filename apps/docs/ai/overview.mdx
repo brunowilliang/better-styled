@@ -20,13 +20,25 @@ This documentation is optimized for AI assistants. Here's how to connect it to y
 <Tabs>
   <Tab title="Claude Code">
     ```bash
-    claude mcp add better-styled https://better-styled.com --transport sse
+    claude mcp add --transport http better-styled https://better-styled.com/mcp
+    ```
+  </Tab>
+  <Tab title="Claude Web">
+    Go to [Connectors](https://claude.ai/settings/connectors) and add:
+    ```
+    https://better-styled.com/mcp
     ```
   </Tab>
   <Tab title="Cursor">
-    Add to Cursor settings:
-    ```
-    https://better-styled.com
+    Add to `mcp.json` (`Cmd+Shift+P` → "Open MCP settings"):
+    ```json
+    {
+      "mcpServers": {
+        "better-styled": {
+          "url": "https://better-styled.com/mcp"
+        }
+      }
+    }
     ```
   </Tab>
   <Tab title="ChatGPT">
