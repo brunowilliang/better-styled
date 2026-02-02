@@ -1,9 +1,9 @@
-import { createContext, useContext } from "react"
+import { createContext, useContext } from "react";
 import type {
 	InferContextValue,
 	StyledContext,
 	StyledContextInput,
-} from "./types/createStyledContext"
+} from "./types/createStyledContext";
 
 /**
  * Creates a styled context for sharing variant values between parent and child components.
@@ -35,12 +35,12 @@ import type {
 export const createStyledContext = <const T extends StyledContextInput>(
 	variants: T,
 ): StyledContext<T> => {
-	const Context = createContext<InferContextValue<T> | null>(null)
+	const Context = createContext<InferContextValue<T> | null>(null);
 
 	return {
 		Context,
 		Provider: Context.Provider,
 		useVariants: () => useContext(Context),
 		variantKeys: variants,
-	}
-}
+	};
+};

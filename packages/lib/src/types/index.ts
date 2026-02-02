@@ -1,16 +1,14 @@
 // Re-export useful React types
-export type { ComponentProps, ElementType } from "react"
-
-// Shared types
-export type { AllowedProps, VariantProps } from "./shared"
-
+export type { ComponentProps, ElementType } from "react";
 // createStyledContext types
 export type {
 	InferContextValue,
 	StyledContext,
 	StyledContextInput,
 	VariantOption,
-} from "./createStyledContext"
+} from "./createStyledContext";
+// Shared types
+export type { AllowedProps, VariantProps } from "./shared";
 
 // styled() types
 export type {
@@ -28,11 +26,11 @@ export type {
 	StyledPropsWithoutContext,
 	VariantsConfig,
 	VariantsConfigFromInput,
-} from "./styled"
+} from "./styled";
 
 // withSlots types
 export type {
 	DecoratedComponent,
 	SlotProps,
 	WithSlotsResult,
-} from "./withSlots"
+} from "./withSlots";

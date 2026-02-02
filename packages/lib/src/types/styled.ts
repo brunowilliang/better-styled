@@ -1,6 +1,10 @@
-import type { ComponentProps, ElementType, ReactNode } from "react"
-import type { VariantProps } from "./shared"
-import type { InferContextValue, StyledContext, StyledContextInput } from "./createStyledContext"
+import type { ComponentProps, ElementType, ReactNode } from "react";
+import type {
+	InferContextValue,
+	StyledContext,
+	StyledContextInput,
+} from "./createStyledContext";
+import type { VariantProps } from "./shared";
 
 // ============================================================================
 // Types for styled() WITH context
@@ -17,8 +21,8 @@ export type VariantsConfigFromInput<
 > = {
 	[K in keyof Input]?: Input[K] extends readonly ["boolean"]
 		? { true?: VariantProps<T>; false?: VariantProps<T> }
-		: { [V in Input[K][number]]?: VariantProps<T> }
-}
+		: { [V in Input[K][number]]?: VariantProps<T> };
+};
 
 /**
  * Default variants type based on the original input arrays
@@ -28,8 +32,8 @@ export type VariantsConfigFromInput<
 export type DefaultVariantsFromInput<Input extends StyledContextInput> = {
 	[K in keyof Input]?: Input[K] extends readonly ["boolean"]
 		? boolean
-		: Input[K][number]
-}
+		: Input[K][number];
+};
 
 /**
  * Props for styled component with context
@@ -38,7 +42,7 @@ export type DefaultVariantsFromInput<Input extends StyledContextInput> = {
 export type StyledPropsWithContext<
 	T extends ElementType,
 	CV extends Record<string, unknown>,
-> = Omit<ComponentProps<T>, keyof CV> & Partial<CV> & { children?: ReactNode }
+> = Omit<ComponentProps<T>, keyof CV> & Partial<CV> & { children?: ReactNode };
 
 /**
  * Config type that requires context
@@ -48,14 +52,14 @@ export type ConfigWithContext<
 	T extends ElementType,
 	Input extends StyledContextInput,
 > = {
-	context: StyledContext<Input>
-	base?: VariantProps<T>
-	variants?: VariantsConfigFromInput<T, Input>
-	defaultVariants?: DefaultVariantsFromInput<Input>
+	context: StyledContext<Input>;
+	base?: VariantProps<T>;
+	variants?: VariantsConfigFromInput<T, Input>;
+	defaultVariants?: DefaultVariantsFromInput<Input>;
 	compoundVariants?: Array<
 		Partial<InferContextValue<Input>> & { props: VariantProps<T> }
-	>
-}
+	>;
+};
 
 // ============================================================================
 // Types for styled() WITHOUT context
@@ -66,9 +70,9 @@ export type ConfigWithContext<
  */
 export type VariantsConfig<T extends ElementType> = {
 	[variantName: string]: {
-		[value: string]: VariantProps<T>
-	}
-}
+		[value: string]: VariantProps<T>;
+	};
+};
 
 /**
  * Helper to check if a variant has boolean keys (true/false)
@@ -77,28 +81,34 @@ export type HasBooleanKeys<V> = "true" extends keyof V
 	? true
 	: "false" extends keyof V
 		? true
-		: false
+		: false;
 
 /**
  * Extract only string literal keys from an object (excludes inherited object methods)
  */
-export type StringKeys<V> = Extract<keyof V, string>
+export type StringKeys<V> = Extract<keyof V, string>;
 
 /**
  * Infers the default variants type from the variants config
  * Each key in defaultVariants should only accept keys defined in that variant
  */
 export type InferDefaultVariants<V extends VariantsConfig<ElementType>> = {
-	[K in keyof V]?: HasBooleanKeys<V[K]> extends true ? boolean : StringKeys<V[K]>
-}
+	[K in keyof V]?: HasBooleanKeys<V[K]> extends true
+		? boolean
+		: StringKeys<V[K]>;
+};
 
 /**
  * Infers variant props from the variants config for component props
  * Excludes 'children' from variant keys to prevent conflicts
  */
 export type InferVariantProps<V extends VariantsConfig<ElementType>> = {
-	[K in keyof V as K extends "children" ? never : K]?: HasBooleanKeys<V[K]> extends true ? boolean : StringKeys<V[K]>
-}
+	[K in keyof V as K extends "children" ? never : K]?: HasBooleanKeys<
+		V[K]
+	> extends true
+		? boolean
+		: StringKeys<V[K]>;
+};
 
 /**
  * Compound variant type - all properties optional for better autocomplete
@@ -108,11 +118,13 @@ export type CompoundVariant<
 	T extends ElementType,
 	V extends VariantsConfig<T>,
 > = {
-	[K in keyof V]?: HasBooleanKeys<V[K]> extends true ? boolean : StringKeys<V[K]>
+	[K in keyof V]?: HasBooleanKeys<V[K]> extends true
+		? boolean
+		: StringKeys<V[K]>;
 } & {
 	/** Props to apply when this compound variant matches (required) */
-	props?: VariantProps<T>
-}
+	props?: VariantProps<T>;
+};
 
 /**
  * Config type without context - infers types from variants
@@ -121,23 +133,24 @@ export type ConfigWithoutContext<
 	T extends ElementType,
 	V extends VariantsConfig<T>,
 > = {
-	context?: never
-	base?: VariantProps<T>
-	variants?: V
-	defaultVariants?: InferDefaultVariants<V>
-	compoundVariants?: CompoundVariant<T, V>[]
-}
+	context?: never;
+	base?: VariantProps<T>;
+	variants?: V;
+	defaultVariants?: InferDefaultVariants<V>;
+	compoundVariants?: CompoundVariant<T, V>[];
+};
 
 /**
  * Extract actual defined keys from variants (not index signature)
  */
-type ExtractVariantKeys<V> = V extends Record<infer K, unknown>
-	? K extends string
-		? string extends K
-			? never // Exclude index signature
-			: K
-		: never
-	: never
+type ExtractVariantKeys<V> =
+	V extends Record<infer K, unknown>
+		? K extends string
+			? string extends K
+				? never // Exclude index signature
+				: K
+			: never
+		: never;
 
 /**
  * Props for styled component without context
@@ -147,8 +160,10 @@ export type StyledPropsWithoutContext<
 	T extends ElementType,
 	V extends VariantsConfig<T>,
 > = Omit<ComponentProps<T>, ExtractVariantKeys<V>> & {
-	[K in ExtractVariantKeys<V>]?: HasBooleanKeys<V[K]> extends true ? boolean : StringKeys<V[K]>
-}
+	[K in ExtractVariantKeys<V>]?: HasBooleanKeys<V[K]> extends true
+		? boolean
+		: StringKeys<V[K]>;
+};
 
 // ============================================================================
 // Styled Component Types
@@ -160,9 +175,11 @@ export type StyledPropsWithoutContext<
 export type StyledComponentWithContext<
 	T extends ElementType,
 	Input extends StyledContextInput,
-> = ((props: StyledPropsWithContext<T, InferContextValue<Input>>) => ReactNode) & {
-	displayName?: string
-}
+> = ((
+	props: StyledPropsWithContext<T, InferContextValue<Input>>,
+) => ReactNode) & {
+	displayName?: string;
+};
 
 /**
  * Type for the styled component without context
@@ -171,5 +188,5 @@ export type StyledComponentWithoutContext<
 	T extends ElementType,
 	V extends VariantsConfig<T>,
 > = ((props: StyledPropsWithoutContext<T, V>) => ReactNode) & {
-	displayName?: string
-}
+	displayName?: string;
+};

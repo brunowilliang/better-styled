@@ -1,5 +1,9 @@
-import { type ForwardRefExoticComponent, forwardRef } from "react"
-import type { DecoratedComponent, SlotProps, WithSlotsResult } from "./types/withSlots"
+import { type ForwardRefExoticComponent, forwardRef } from "react";
+import type {
+	DecoratedComponent,
+	SlotProps,
+	WithSlotsResult,
+} from "./types/withSlots";
 
 // WeakSet for tracking decorated components (better for GC than Symbol)
 const decoratedComponents = new WeakSet<Function>();

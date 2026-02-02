@@ -3,7 +3,9 @@ import { mergeFinalProps } from "./merge";
 
 type ActiveVariants = Record<string, string | boolean>;
 type VariantsConfig = Record<string, Record<string, unknown>>;
-type CompoundVariant = Record<string, unknown> & { props: Record<string, unknown> };
+type CompoundVariant = Record<string, unknown> & {
+	props: Record<string, unknown>;
+};
 
 /**
  * Checks if all conditions of a compound variant match the active variants.

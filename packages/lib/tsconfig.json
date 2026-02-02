@@ -21,6 +21,11 @@
 		"declarationMap": false,
 		"rootDir": "./"
 	},
-	"include": ["index.ts", "src/**/*.ts", "src/**/*.tsx", "../testing/matchers.d.ts"],
+	"include": [
+		"index.ts",
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"../testing/matchers.d.ts"
+	],
 	"exclude": ["node_modules", "dist"]
 }
