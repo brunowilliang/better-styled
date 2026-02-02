@@ -1,0 +1,273 @@
+---
+title: "Using better-styled with React Native and Expo"
+sidebarTitle: "React Native"
+description: "The API is identical to web - just use React Native components instead of HTML elements. Works with NativeWind and Uniwind."
+---
+
+## Prerequisites
+
+better-styled uses `className` for styling. You need a Tailwind-to-StyleSheet solution:
+
+- [NativeWind](https://www.nativewind.dev/) - Tailwind CSS utilities for React Native
+- [Uniwind](https://uniwind.dev/) - High-performance Tailwind bindings for React Native (by the Unistyles team)
+
+<Note>
+  Both libraries convert Tailwind class names to React Native styles. Follow their installation guides first - better-styled works with both out of the box.
+</Note>
+
+## Basic Usage
+
+```tsx
+import { styled } from "better-styled";
+import { Pressable, Text, View } from "react-native";
+
+const Card = styled(View, {
+  base: {
+    className: "rounded-xl bg-white p-4 shadow-sm",
+  },
+});
+
+const Button = styled(Pressable, {
+  base: {
+    className: "rounded-lg bg-blue-600 px-4 py-2 active:opacity-80",
+  },
+  variants: {
+    size: {
+      sm: { className: "px-3 py-1.5" },
+      lg: { className: "px-6 py-3" },
+    },
+  },
+});
+
+const Label = styled(Text, {
+  base: {
+    className: "text-white font-medium text-center",
+  },
+});
+```
+
+## Pressable States
+
+Use Tailwind's state modifiers directly in your className:
+
+```tsx
+const Button = styled(Pressable, {
+  base: {
+    className: "bg-blue-600 rounded-lg px-4 py-2 active:opacity-80 active:scale-95",
+  },
+});
+```
+
+No need for `style={({ pressed }) => ...}` - the className handles it cleanly.
+
+## Platform-Specific Styles
+
+Use `ios:` and `android:` prefixes directly in className:
+
+```tsx
+const Card = styled(View, {
+  base: {
+    className: "rounded-xl bg-white p-4 ios:shadow-sm android:elevation-2",
+  },
+});
+
+const Button = styled(Pressable, {
+  base: {
+    className: "ios:bg-blue-600 android:bg-blue-500",
+  },
+});
+```
+
+## Function Composition: Haptics Example
+
+One of better-styled's most powerful features is **function composition**. Event handlers from different sources (base, variants, direct props) all execute in sequence - they don't overwrite each other.
+
+This is perfect for things like haptic feedback:
+
+```tsx
+import { styled } from "better-styled";
+import { Pressable } from "react-native";
+import * as Haptics from "expo-haptics";
+
+const Button = styled(Pressable, {
+  base: {
+    className: "rounded-lg px-4 py-2 active:opacity-80",
+  },
+  variants: {
+    variant: {
+      primary: { className: "bg-blue-600" },
+      danger: { className: "bg-red-600" },
+    },
+    haptics: {
+      light: {
+        onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+      },
+      medium: {
+        onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
+      },
+      heavy: {
+        onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy),
+      },
+    },
+  },
+});
+```
+
+Now you can add haptics to any button:
+
+```tsx
+<Button
+  variant="danger"
+  haptics="heavy"
+  onPress={() => {
+    // Your handler runs AFTER the haptics
+    analytics.track("delete_pressed");
+    deleteItem();
+  }}
+>
+  <Text>Delete</Text>
+</Button>
+```
+
+**Execution order:**
+1. ① Base `onPress` (if any)
+2. ② Variant `onPress` (haptics feedback)
+3. ③ Direct `onPress` prop (your handler)
+
+✅ All three run. Nothing gets overwritten.
+
+This pattern is perfect for **design system features** like:
+- 📳 **Haptics** - Tactile feedback as part of component UX
+- 🔊 **Sound effects** - Audio feedback on interactions
+
+## Full Example: Button Component
+
+A complete button component with context and slots:
+
+```tsx
+import { createStyledContext, styled, withSlots } from "better-styled";
+import { Pressable, Text } from "react-native";
+import * as Haptics from "expo-haptics";
+
+const ButtonContext = createStyledContext({
+  variant: ["primary", "secondary", "outline"],
+  size: ["sm", "md", "lg"],
+  isDisabled: ["boolean"],
+});
+
+const ButtonRoot = styled(Pressable, {
+  context: ButtonContext,
+  base: {
+    className: "flex-row items-center justify-center rounded-xl active:opacity-80",
+  },
+  variants: {
+    variant: {
+      primary: { className: "bg-blue-600" },
+      secondary: { className: "bg-gray-600" },
+      outline: { className: "bg-transparent border-2 border-blue-600" },
+    },
+    size: {
+      sm: { className: "px-3 py-1.5 gap-1.5" },
+      md: { className: "px-4 py-2 gap-2" },
+      lg: { className: "px-6 py-3 gap-2.5" },
+    },
+    isDisabled: {
+      true: { className: "opacity-50", disabled: true },
+    },
+    haptics: {
+      light: {
+        onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+      },
+      medium: {
+        onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
+      },
+      heavy: {
+        onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy),
+      },
+      success: {
+        onPress: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
+      },
+      warning: {
+        onPress: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning),
+      },
+      error: {
+        onPress: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error),
+      },
+    },
+  },
+  defaultVariants: {
+    variant: "primary",
+    size: "md",
+  },
+});
+
+const ButtonLabel = styled(Text, {
+  context: ButtonContext,
+  base: { className: "font-semibold" },
+  variants: {
+    variant: {
+      primary: { className: "text-white" },
+      secondary: { className: "text-white" },
+      outline: { className: "text-blue-600" },
+    },
+    size: {
+      sm: { className: "text-sm" },
+      md: { className: "text-base" },
+      lg: { className: "text-lg" },
+    },
+  },
+});
+
+export const Button = withSlots(ButtonRoot, {
+  Label: ButtonLabel,
+});
+```
+
+Usage:
+
+```tsx
+<Button variant="primary" size="lg" haptics="medium">
+  <Button.Label>Get Started</Button.Label>
+</Button>
+
+<Button variant="outline" isDisabled>
+  <Button.Label>Disabled</Button.Label>
+</Button>
+
+{/* style prop overrides className styles */}
+<Button
+  variant="primary"
+  style={{ backgroundColor: "#623791" }}
+  onPress={() => console.log("Custom purple button!")}
+>
+  <Button.Label>Custom Color</Button.Label>
+</Button>
+```
+
+## Tips
+
+<AccordionGroup>
+  <Accordion title="Use Pressable, not TouchableOpacity">
+    `Pressable` is the modern way to handle touches in React Native. It's more flexible and has better TypeScript support.
+  </Accordion>
+
+  <Accordion title="Leverage className state modifiers">
+    NativeWind and Uniwind support `active:`, `focus:`, `disabled:` and other state modifiers. Use them instead of managing state manually.
+  </Accordion>
+
+  <Accordion title="Function composition is your friend">
+    Add haptics or sound effects at the variant level. They won't interfere with handlers passed directly to the component.
+  </Accordion>
+
+  <Accordion title="Don't shadow native props">
+    Avoid naming variants after existing component props. For example, use `isDisabled` instead of `disabled` since `Pressable` already has a `disabled` prop. This prevents confusion and type conflicts.
+  </Accordion>
+
+  <Accordion title="style prop overrides className">
+    The `style` prop has higher priority than `className`. If you pass `style={{ backgroundColor: 'red' }}`, it will override any background color set via Tailwind classes.
+  </Accordion>
+</AccordionGroup>
+
+<Card title="Next: TypeScript Guide" icon="arrow-right" href="/guides/typescript">
+  Get the most out of type inference
+</Card>

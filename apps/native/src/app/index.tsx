@@ -8,7 +8,9 @@ export default function App() {
 				<Button.Label>Hello World</Button.Label>
 			</Button>
 			<Button
-				isDisabled
+				style={{
+					backgroundColor: "#623791",
+				}}
 				onPress={() => console.log("Button onPress pressed")}
 				variant="primary"
 				size="sm"
@@ -18,7 +20,11 @@ export default function App() {
 			<Button variant="secondary" size="md">
 				<Button.Label>Hello World</Button.Label>
 			</Button>
-			<Button variant="secondary" size="md" className="bg-amber-500">
+			<Button
+				variant="secondary"
+				size="md"
+				className="active:bg-amber-500 active:opacity-20"
+			>
 				<Button.Label>Hello World</Button.Label>
 			</Button>
 			<Button variant="outline" size="lg">

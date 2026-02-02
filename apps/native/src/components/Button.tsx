@@ -6,7 +6,7 @@ import { Pressable, Text } from "react-native";
 const ButtonContext = createStyledContext({
 	variant: ["primary", "secondary", "outline"],
 	size: ["sm", "md", "lg"],
-	isDisabled: ["boolean"],
+	disabled: ["boolean"],
 });
 
 // Styled Pressable with variants
@@ -39,13 +39,10 @@ const StyledButton = styled(Pressable, {
 				className: "p-6",
 			},
 		},
-		isDisabled: {
+		disabled: {
 			true: {
 				disabled: true,
 				className: "opacity-20",
-			},
-			false: {
-				disabled: false,
 			},
 		},
 	},

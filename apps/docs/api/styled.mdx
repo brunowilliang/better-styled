@@ -1,0 +1,227 @@
+---
+title: "API reference for the styled function"
+sidebarTitle: "styled()"
+description: "Creates a styled component with variant support. The core function of better-styled."
+---
+
+## Signature
+
+```tsx
+function styled<T extends ElementType>(
+  component: T,
+  config: StyledConfig<T>
+): StyledComponent<T>
+```
+
+## Parameters
+
+<ParamField path="component" type="ElementType" required>
+  The base component to style. Can be:
+  - HTML element string: `"button"`, `"div"`, `"span"`
+  - React component: `Link`, `Pressable`
+  - Another styled component
+</ParamField>
+
+<ParamField path="config" type="object" required>
+  Configuration object with the following properties:
+</ParamField>
+
+### Config Properties
+
+<ParamField path="config.base" type="VariantProps<T>">
+  Props that always apply, regardless of variants.
+
+  ```tsx
+  base: {
+    className: "rounded-lg",
+    role: "button",
+  }
+  ```
+</ParamField>
+
+<ParamField path="config.variants" type="object">
+  Variant definitions. Each key is a variant name, each value is an object mapping option names to props.
+
+  ```tsx
+  variants: {
+    size: {
+      sm: { className: "h-8" },
+      md: { className: "h-10" },
+      lg: { className: "h-12" },
+    },
+    color: {
+      blue: { className: "bg-blue-500" },
+      red: { className: "bg-red-500" },
+    },
+  }
+  ```
+</ParamField>
+
+<ParamField path="config.defaultVariants" type="object">
+  Default values for variants when not specified.
+
+  ```tsx
+  defaultVariants: {
+    size: "md",
+    color: "blue",
+  }
+  ```
+</ParamField>
+
+<ParamField path="config.compoundVariants" type="array">
+  Array of compound variant definitions. Each applies when all conditions match.
+
+  ```tsx
+  compoundVariants: [
+    {
+      size: "lg",
+      color: "blue",
+      props: { className: "shadow-lg" },
+    },
+  ]
+  ```
+</ParamField>
+
+<ParamField path="config.context" type="StyledContext">
+  Context for variant propagation between parent and child components.
+
+  ```tsx
+  const ButtonContext = createStyledContext({ ... });
+
+  styled("button", {
+    context: ButtonContext,
+    // ...
+  });
+  ```
+</ParamField>
+
+## Returns
+
+A React component with:
+- All props from the base component
+- Variant props based on your config
+- Automatic type inference
+
+## Examples
+
+### Basic
+
+```tsx
+import { styled } from "better-styled";
+
+const Button = styled("button", {
+  base: { className: "px-4 py-2 rounded font-medium" },
+  variants: {
+    variant: {
+      primary: { className: "bg-blue-600 text-white" },
+      secondary: { className: "bg-gray-200 text-gray-900" },
+    },
+  },
+  defaultVariants: {
+    variant: "primary",
+  },
+});
+
+<Button variant="secondary">Click me</Button>
+```
+
+### With Context
+
+```tsx
+const ButtonContext = createStyledContext({
+  size: ["sm", "md", "lg"],
+});
+
+const Button = styled("button", {
+  context: ButtonContext,
+  variants: {
+    size: {
+      sm: { className: "text-sm" },
+      md: { className: "text-base" },
+      lg: { className: "text-lg" },
+    },
+  },
+});
+```
+
+### With React Native
+
+```tsx
+import { Pressable } from "react-native";
+
+const Button = styled(Pressable, {
+  base: { className: "rounded-lg px-4 py-2" },
+  variants: {
+    isDisabled: {
+      true: { className: "opacity-50", disabled: true },
+    },
+  },
+});
+```
+
+<Note>
+  ⚠️ Use `isDisabled` instead of `disabled` to avoid shadowing `Pressable`'s native prop.
+</Note>
+
+### Boolean Variants
+
+```tsx
+const Input = styled("input", {
+  variants: {
+    hasError: {
+      true: { className: "border-red-500" },
+    },
+  },
+});
+
+<Input hasError />
+<Input hasError={false} />
+```
+
+<Note>
+  You only need to define `true`. The `false` case uses base styles by default.
+</Note>
+
+### Compound Variants
+
+```tsx
+const Badge = styled("span", {
+  variants: {
+    size: { sm: {}, lg: {} },
+    color: { blue: {}, red: {} },
+  },
+  compoundVariants: [
+    {
+      size: "lg",
+      color: "blue",
+      props: { className: "ring-2 ring-blue-300" },
+    },
+    {
+      size: "lg",
+      color: "red",
+      props: { className: "ring-2 ring-red-300" },
+    },
+  ],
+});
+```
+
+## Props Merging Behavior
+
+| Prop Type | Merge Behavior |
+|-----------|----------------|
+| `className` | 🔀 Merged with `tailwind-merge` |
+| `style` | 🔀 Object merged with `Object.assign` |
+| Functions (`onClick`, etc.) | ⛓️ Composed (all execute) |
+| Other props | ⬆️ Later values override |
+
+Priority order (lowest to highest):
+1. 🥉 `base`
+2. 🥈 `variants`
+3. 🥈 `compoundVariants`
+4. 🥇 Direct props
+
+## See Also
+
+- [styled() Concept Guide](/concepts/styled)
+- [Variants](/concepts/variants)
+- [Context](/concepts/context)

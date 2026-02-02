@@ -1,0 +1,237 @@
+---
+title: "Getting the most out of type inference"
+sidebarTitle: "TypeScript"
+description: "better-styled is built with TypeScript from the ground up. Types are inferred automatically - no manual typing needed."
+---
+
+## Automatic Inference
+
+When you define variants, TypeScript infers the types automatically.
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    size: {
+      sm: { className: "text-sm" },
+      md: { className: "text-base" },
+      lg: { className: "text-lg" },
+    },
+    isDisabled: {
+      true: { className: "opacity-50", disabled: true },
+    },
+  },
+});
+
+// TypeScript knows:
+// - size?: "sm" | "md" | "lg"
+// - isDisabled?: boolean
+
+<Button size="xl" />  // ❌ Error: "xl" is not assignable
+<Button isDisabled="yes" />  // ❌ Error: "yes" is not assignable to boolean
+```
+
+✅ No `as const` needed. No manual type definitions.
+
+## How It Works
+
+better-styled uses `const` type parameters to preserve literal types:
+
+```tsx
+// Internal signature (simplified)
+function styled<T, const V extends VariantsConfig>(
+  component: T,
+  config: { variants: V }
+)
+```
+
+The `const` modifier tells TypeScript to infer exact literal types (`"sm" | "md" | "lg"`) instead of widening to `string`.
+
+## Context Type Inference
+
+`createStyledContext` also uses const type parameters:
+
+```tsx
+const ButtonContext = createStyledContext({
+  size: ["sm", "md", "lg"],
+  variant: ["primary", "secondary"],
+  isDisabled: ["boolean"],
+});
+
+// TypeScript infers:
+// {
+//   size: "sm" | "md" | "lg"
+//   variant: "primary" | "secondary"
+//   isDisabled: boolean
+// }
+```
+
+The special `["boolean"]` array is transformed into a proper `boolean` type, not `"boolean"`.
+
+## Getting Variant Props Type
+
+Sometimes you need the variant props type for other purposes. Use TypeScript's inference:
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    size: { sm: {}, md: {}, lg: {} },
+    variant: { primary: {}, secondary: {} },
+  },
+});
+
+// Extract the props type
+type ButtonProps = React.ComponentProps<typeof Button>;
+
+// Use it elsewhere
+function ButtonGroup({ size }: Pick<ButtonProps, "size">) {
+  return (
+    <div>
+      <Button size={size}>One</Button>
+      <Button size={size}>Two</Button>
+    </div>
+  );
+}
+```
+
+## Extending Components
+
+When you wrap a styled component, types flow through:
+
+```tsx
+const BaseButton = styled("button", {
+  variants: {
+    size: { sm: {}, lg: {} },
+  },
+});
+
+// Types are preserved
+function IconButton(props: React.ComponentProps<typeof BaseButton> & { icon: string }) {
+  const { icon, ...rest } = props;
+  return (
+    <BaseButton {...rest}>
+      <span>{icon}</span>
+      {props.children}
+    </BaseButton>
+  );
+}
+
+<IconButton size="lg" icon="★">Star</IconButton>
+```
+
+## Strict Variants
+
+By default, variant props are optional. If you want to require them, don't use `defaultVariants`:
+
+```tsx
+// size is required because no default
+const Button = styled("button", {
+  variants: {
+    size: {
+      sm: { className: "text-sm" },
+      lg: { className: "text-lg" },
+    },
+  },
+  // No defaultVariants for size
+});
+
+<Button />  // ❌ Error: Property 'size' is missing
+<Button size="lg" />  // ✅ OK
+```
+
+## Working with Refs
+
+Refs work as expected. The component forwards refs to the underlying element:
+
+```tsx
+const Button = styled("button", {
+  base: { className: "px-4 py-2" },
+});
+
+function Form() {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  return <Button ref={buttonRef}>Submit</Button>;
+}
+```
+
+For React Native:
+
+```tsx
+const Button = styled(Pressable, { ... });
+
+function Screen() {
+  const buttonRef = useRef<View>(null);
+
+  return <Button ref={buttonRef}>Press</Button>;
+}
+```
+
+## Generic Components
+
+If you need a component that works with multiple element types:
+
+```tsx
+// This is advanced - usually you don't need this
+function createStyledLink<T extends ElementType>(component: T) {
+  return styled(component, {
+    base: { className: "text-blue-600 hover:underline" },
+  });
+}
+
+const InternalLink = createStyledLink(Link);
+const ExternalLink = createStyledLink("a");
+```
+
+## Common Patterns
+
+### Omit Specific Variants
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    size: { sm: {}, lg: {} },
+    internal: { true: {} },  // Don't expose this
+  },
+});
+
+type PublicButtonProps = Omit<
+  React.ComponentProps<typeof Button>,
+  "internal"
+>;
+```
+
+### Require Children
+
+```tsx
+const Card = styled("div", {
+  base: { className: "p-4 rounded" },
+});
+
+type CardProps = React.ComponentProps<typeof Card> & {
+  children: React.ReactNode;  // Make children required
+};
+
+function StrictCard({ children, ...props }: CardProps) {
+  return <Card {...props}>{children}</Card>;
+}
+```
+
+## Tips
+
+<AccordionGroup>
+  <Accordion title="Let TypeScript infer">
+    Don't add type annotations unless necessary. The inference is designed to work without them.
+  </Accordion>
+
+  <Accordion title="Use const arrays for context">
+    Always pass arrays directly to `createStyledContext`. Don't assign them to variables first, or you'll lose the literal types.
+  </Accordion>
+
+  <Accordion title="Check IDE tooltips">
+    Hover over components in your IDE to see the inferred types. This is the best way to understand what TypeScript sees.
+  </Accordion>
+</AccordionGroup>
+
+<Card title="API Reference" icon="arrow-right" href="/api/styled">
+  Complete API documentation
+</Card>

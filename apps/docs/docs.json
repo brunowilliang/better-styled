@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Better Styled",
-  "description": "Documentation for better styled",
+  "description": "Type-safe styled components with variant propagation for React and React Native",
   "favicon": "./assets/favicon.svg",
   "fonts": {
     "family": "Geist"
@@ -12,6 +12,14 @@
     "light": "#623791",
     "dark": "#623791"
   },
+  "styling": {
+    "codeblocks": {
+      "theme": {
+        "light": "min-light",
+        "dark": "synthwave-84"
+      }
+    }
+  },
   "background": {
     "color": {
       "light": "#EFE7F2",
@@ -20,48 +28,43 @@
     "decoration": "grid"
   },
   "logo": {
-    "light": "./assets/logo_light.svg",
-    "dark": "./assets/logo_dark.svg"
+    "light": "/assets/logo_light.svg",
+    "dark": "/assets/logo_dark.svg"
   },
   "navigation": {
     "groups": [
       {
         "group": "Getting Started",
-        "root": "index",
         "pages": [
-          "index"
+          "introduction",
+          "installation",
+          "quickstart",
+          "comparison"
         ]
       },
       {
-        "group": "Authentication",
+        "group": "Core Concepts",
         "pages": [
-          "docs/login",
-          "docs/sign-up",
-          "docs/magic-link",
-          "docs/forgot-password"
+          "concepts/styled",
+          "concepts/variants",
+          "concepts/context",
+          "concepts/slots"
         ]
       },
       {
-        "group": "Pages",
+        "group": "Guides",
         "pages": [
-          "docs/create-page",
-          "docs/edit-page",
-          "docs/deactivate-page",
-          "docs/reactivate-page"
+          "guides/react-native",
+          "guides/typescript"
         ]
       },
       {
-        "group": "Transactions",
+        "group": "API Reference",
         "pages": [
-          "docs/start-donation",
-          "docs/product-mode",
-          "docs/send-receipt"
-        ]
-      },
-      {
-        "group": "Troubleshooting",
-        "pages": [
-          "docs/troubleshooting-discover-readers"
+          "api/styled",
+          "api/create-styled-context",
+          "api/with-slots",
+          "api/utilities"
         ]
       }
     ]
@@ -69,27 +72,28 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:eu@brunowillian.com ",
+        "label": "GitHub",
+        "href": "https://github.com/brunowilliang/better-styled",
         "icon": "github"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Go to Github",
-      "href": "https://github.com/brunowilliang/better-styled"
+      "label": "npm",
+      "href": "https://www.npmjs.com/package/better-styled"
     }
   },
   "footer": {
     "socials": {
       "x": "https://x.com/Brunowgarcia",
-      "linkedin": "https://linkedin.com/in/brunowilliang"
+      "linkedin": "https://linkedin.com/in/brunowilliang",
+      "github": "https://github.com/brunowilliang/better-styled"
     }
   },
   "errors": {
     "404": {
       "title": "Page not found",
-      "description": "The page you are looking for does not exist. Please check the URL and try again.",
+      "description": "The page you are looking for does not exist.",
       "redirect": false
     }
   }

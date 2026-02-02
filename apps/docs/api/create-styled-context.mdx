@@ -1,0 +1,190 @@
+---
+title: "API reference for creating styled contexts"
+sidebarTitle: "createStyledContext()"
+description: "Creates a context for sharing variants between parent and child components."
+---
+
+## Signature
+
+```tsx
+function createStyledContext<T extends StyledContextInput>(
+  variants: T
+): StyledContext<T>
+```
+
+## Parameters
+
+<ParamField path="variants" type="object" required>
+  An object defining the variant names and their possible values.
+
+  Each key is a variant name. Each value is an array of possible values.
+
+  ```tsx
+  {
+    size: ["sm", "md", "lg"],
+    variant: ["primary", "secondary"],
+    disabled: ["boolean"],
+  }
+  ```
+</ParamField>
+
+### Special Values
+
+<ParamField path='["boolean"]' type="array">
+  Use `["boolean"]` for true/false variants. This produces a proper `boolean` type instead of `"true" | "false"`.
+
+  ```tsx
+  createStyledContext({
+    disabled: ["boolean"],  // Type: boolean
+    loading: ["boolean"],   // Type: boolean
+  });
+  ```
+</ParamField>
+
+## Returns
+
+<ParamField path="StyledContext" type="object">
+  An object with:
+</ParamField>
+
+<ParamField path="Context" type="React.Context">
+  The underlying React context. Rarely needed directly.
+</ParamField>
+
+<ParamField path="Provider" type="React.Provider">
+  The context provider component. Used internally by styled components.
+</ParamField>
+
+<ParamField path="useVariants" type="function">
+  Hook to read current variant values. Returns `null` outside a provider.
+
+  ```tsx
+  const context = createStyledContext({ size: ["sm", "lg"] });
+
+  function Child() {
+    const variants = context.useVariants();
+    // variants: { size: "sm" | "lg" } | null
+  }
+  ```
+</ParamField>
+
+<ParamField path="variantKeys" type="T">
+  The original variants object. Used for type inference.
+</ParamField>
+
+## Examples
+
+### Basic
+
+```tsx
+import { createStyledContext } from "better-styled";
+
+const CardContext = createStyledContext({
+  size: ["sm", "md", "lg"],
+  elevated: ["boolean"],
+});
+```
+
+### With styled()
+
+```tsx
+const CardContext = createStyledContext({
+  variant: ["default", "outlined"],
+});
+
+const CardRoot = styled("div", {
+  context: CardContext,
+  variants: {
+    variant: {
+      default: { className: "bg-white shadow" },
+      outlined: { className: "border-2 border-gray-200" },
+    },
+  },
+});
+
+const CardTitle = styled("h2", {
+  context: CardContext,
+  base: { className: "font-bold" },
+  variants: {
+    variant: {
+      default: { className: "text-gray-900" },
+      outlined: { className: "text-gray-700" },
+    },
+  },
+});
+```
+
+### Multiple Variants
+
+```tsx
+const ButtonContext = createStyledContext({
+  size: ["xs", "sm", "md", "lg", "xl"],
+  variant: ["solid", "outline", "ghost", "link"],
+  colorScheme: ["blue", "red", "green", "gray"],
+  disabled: ["boolean"],
+  loading: ["boolean"],
+});
+```
+
+### Using useVariants
+
+```tsx
+const TabsContext = createStyledContext({
+  size: ["sm", "lg"],
+});
+
+function TabIndicator() {
+  const variants = TabsContext.useVariants();
+
+  if (!variants) return null;
+
+  return (
+    <div className={variants.size === "lg" ? "h-1" : "h-0.5"} />
+  );
+}
+```
+
+## Type Inference
+
+Types are automatically inferred from the arrays:
+
+```tsx
+const ctx = createStyledContext({
+  size: ["sm", "md", "lg"],        // "sm" | "md" | "lg"
+  disabled: ["boolean"],           // boolean
+  variant: ["a", "b", "c", "d"],   // "a" | "b" | "c" | "d"
+});
+
+// Inferred type:
+// {
+//   size: "sm" | "md" | "lg"
+//   disabled: boolean
+//   variant: "a" | "b" | "c" | "d"
+// }
+```
+
+No `as const` needed.
+
+## Notes
+
+<Note>
+  Context values are only provided when a parent component with `context` receives variant props. If no variant props are passed, children read from their own `defaultVariants`.
+</Note>
+
+<Warning>
+  Always define arrays inline in `createStyledContext()`. Assigning them to variables first can break type inference.
+
+  ```tsx
+  // ✅ Correct
+  createStyledContext({ size: ["sm", "lg"] });
+
+  // ❌ Wrong - loses literal types
+  const sizes = ["sm", "lg"];
+  createStyledContext({ size: sizes });
+  ```
+</Warning>
+
+## See Also
+
+- [Context Concept Guide](/concepts/context)
+- [styled()](/api/styled)

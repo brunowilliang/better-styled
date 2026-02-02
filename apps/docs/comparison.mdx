@@ -1,0 +1,302 @@
+---
+title: "How better-styled compares to other variant libraries"
+sidebarTitle: "Comparison"
+description: "Choosing the right variant library for your project? Here's how better-styled compares to Tailwind Variants, CVA, Windstitch, and classnames."
+---
+
+## Feature Comparison
+
+| Feature | better-styled | Tailwind Variants | CVA | Windstitch | classnames |
+|---------|:-------------:|:-----------------:|:---:|:----------:|:----------:|
+| Variants | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Compound Variants | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Default Variants | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **Context Propagation** | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **Compound Components (Slots)** | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Type Inference | ✅ Automatic | ⚠️ Needs `as const` | ⚠️ Needs `as const` | ✅ Automatic | ❌ |
+| `tailwind-merge` | ✅ Built-in | ✅ Optional | ❌ Manual | ❌ | ❌ |
+| React Native | ✅ | ⚠️ Via NativeWind | ⚠️ Via NativeWind | ⚠️ Via NativeWind | ⚠️ Via NativeWind |
+| **Function Composition** | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Zero Config | ✅ | ⚠️ | ✅ | ✅ | ✅ |
+| Bundle Size | ~3kB | ~5kB | ~1kB | ~1.4kB | ~0.5kB |
+
+<Note>
+  ⚠️ **Via NativeWind** means the library works with React Native only when combined with [NativeWind](https://www.nativewind.dev/) or [Uniwind](https://uniwind.dev/), since they generate class strings that need to be converted to StyleSheet objects.
+</Note>
+
+## What Makes better-styled Different
+
+### Context Propagation
+
+This is the killer feature. **No other library does this.**
+
+```tsx
+// Other libraries: manual prop drilling 😩
+<Button size="lg" variant="primary">
+  <ButtonIcon size="lg" variant="primary" />
+  <ButtonText size="lg" variant="primary">Click</ButtonText>
+</Button>
+
+// better-styled: automatic inheritance 🎉
+<Button size="lg" variant="primary">
+  <Button.Icon />
+  <Button.Label>Click</Button.Label>
+</Button>
+```
+
+Children know their parent's variants automatically. Change the parent, children adapt.
+
+### Function Composition
+
+Event handlers from base, variants, and direct props all execute - nothing gets overwritten.
+
+```tsx
+const Button = styled(Pressable, {
+  variants: {
+    haptics: {
+      medium: {
+        onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
+      },
+    },
+  },
+});
+
+// Both handlers run: haptics first, then your handler
+<Button haptics="medium" onPress={() => doSomething()}>
+  <Button.Label>Tap me</Button.Label>
+</Button>
+```
+
+This is perfect for design system features like haptics, sound effects, or analytics.
+
+### React Native: Components vs Class Strings
+
+All variant libraries work with React Native when combined with NativeWind or Uniwind. The difference is in **what they output**:
+
+| Library | Output | React Native |
+|---------|--------|--------------|
+| **better-styled** | React components | ✅ Works directly with any component |
+| Tailwind Variants | Class strings | ⚠️ Need to manually apply to `className` |
+| CVA | Class strings | ⚠️ Need to manually apply to `className` |
+| Windstitch | Class strings | ⚠️ Need to manually apply to `className` |
+| classnames | Class strings | ⚠️ Need to manually apply to `className` |
+
+```tsx
+// Other libraries: manual className assignment
+const buttonClass = tv({ base: "px-4 py-2", variants: { ... } });
+<Pressable className={buttonClass({ size: "lg" })} />
+
+// better-styled: it's already a component
+const Button = styled(Pressable, { base: { className: "px-4 py-2" }, variants: { ... } });
+<Button size="lg" />
+```
+
+## Detailed Comparisons
+
+### vs Tailwind Variants
+
+[Tailwind Variants](https://www.tailwind-variants.org/) is excellent for styling, but it's not a component library.
+
+| Aspect | better-styled | Tailwind Variants |
+|--------|---------------|-------------------|
+| **Output** | React components | Class strings |
+| **Context** | ✅ Built-in propagation | ❌ Not available |
+| **Slots** | ✅ `withSlots()` helper | ✅ Slots API |
+| **TypeScript** | ✅ No `as const` needed | ⚠️ Requires `as const` |
+| **React Native** | ✅ Direct component support | ⚠️ Via NativeWind (class strings) |
+
+**When to use Tailwind Variants:** If you only need class generation without component abstraction.
+
+**When to use better-styled:** If you want actual React components with context propagation.
+
+### vs CVA (Class Variance Authority)
+
+[CVA](https://cva.style/docs) is minimal and focused on class generation.
+
+| Aspect | better-styled | CVA |
+|--------|---------------|-----|
+| **Output** | React components | Class strings |
+| **Context** | ✅ Built-in propagation | ❌ Not available |
+| **Compound Components** | ✅ `withSlots()` | ❌ Manual |
+| **tailwind-merge** | ✅ Built-in | ❌ Manual integration |
+| **React Native** | ✅ Direct component support | ⚠️ Via NativeWind (class strings) |
+| **Bundle Size** | ~3kB | ~1kB |
+
+**When to use CVA:** If you need the smallest possible bundle and only need class strings.
+
+**When to use better-styled:** If you want context propagation, compound components, or cleaner React Native DX.
+
+### vs Windstitch
+
+[Windstitch](https://windstitch.vercel.app/) is a lightweight Stitches-like library for Tailwind.
+
+| Aspect | better-styled | Windstitch |
+|--------|---------------|------------|
+| **Context** | ✅ Built-in propagation | ❌ Not available |
+| **Compound Variants** | ✅ | ❌ |
+| **Compound Components** | ✅ `withSlots()` | ❌ |
+| **tailwind-merge** | ✅ Built-in | ❌ |
+| **React Native** | ✅ Direct component support | ⚠️ Via NativeWind (class strings) |
+
+**When to use Windstitch:** If you want a Stitches-like API with minimal footprint and don't need compound variants.
+
+**When to use better-styled:** If you need context propagation, compound variants, or cleaner React Native DX.
+
+### vs classnames
+
+[classnames](https://github.com/JedWatson/classnames) is a simple utility for conditionally joining class names.
+
+| Aspect | better-styled | classnames |
+|--------|---------------|------------|
+| **Purpose** | Component styling with variants | Conditional class joining |
+| **Variants** | ✅ Built-in | ❌ Manual logic |
+| **Context** | ✅ Built-in propagation | ❌ Not available |
+| **TypeScript** | ✅ Full inference | ❌ No variant types |
+| **React Native** | ✅ Direct component support | ⚠️ Via NativeWind (class strings) |
+| **Bundle Size** | ~3kB | ~0.5kB |
+
+**When to use classnames:** If you only need to conditionally join class names without a variant system.
+
+**When to use better-styled:** If you want a proper variant system with type safety and context propagation.
+
+## Migration Examples
+
+### From Tailwind Variants
+
+```tsx
+// Before: Tailwind Variants
+import { tv } from "tailwind-variants";
+
+const button = tv({
+  base: "px-4 py-2 rounded",
+  variants: {
+    color: {
+      primary: "bg-blue-600 text-white",
+      secondary: "bg-gray-200 text-gray-800",
+    },
+  },
+});
+
+// Usage
+<button className={button({ color: "primary" })}>Click</button>
+```
+
+```tsx
+// After: better-styled
+import { styled } from "better-styled";
+
+const Button = styled("button", {
+  base: { className: "px-4 py-2 rounded" },
+  variants: {
+    color: {
+      primary: { className: "bg-blue-600 text-white" },
+      secondary: { className: "bg-gray-200 text-gray-800" },
+    },
+  },
+});
+
+// Usage
+<Button color="primary">Click</Button>
+```
+
+### From CVA
+
+```tsx
+// Before: CVA
+import { cva } from "class-variance-authority";
+
+const button = cva("px-4 py-2 rounded", {
+  variants: {
+    intent: {
+      primary: "bg-blue-600 text-white",
+      secondary: "bg-gray-200 text-gray-800",
+    },
+  },
+  defaultVariants: {
+    intent: "primary",
+  },
+});
+
+// Usage
+<button className={button({ intent: "primary" })}>Click</button>
+```
+
+```tsx
+// After: better-styled
+import { styled } from "better-styled";
+
+const Button = styled("button", {
+  base: { className: "px-4 py-2 rounded" },
+  variants: {
+    intent: {
+      primary: { className: "bg-blue-600 text-white" },
+      secondary: { className: "bg-gray-200 text-gray-800" },
+    },
+  },
+  defaultVariants: {
+    intent: "primary",
+  },
+});
+
+// Usage
+<Button intent="primary">Click</Button>
+```
+
+### From classnames
+
+```tsx
+// Before: classnames
+import cx from "classnames";
+
+function Button({ size, variant, className, ...props }) {
+  return (
+    <button
+      className={cx(
+        "px-4 py-2 rounded",
+        size === "sm" && "text-sm",
+        size === "lg" && "text-lg",
+        variant === "primary" && "bg-blue-600 text-white",
+        variant === "secondary" && "bg-gray-200",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+```
+
+```tsx
+// After: better-styled
+import { styled } from "better-styled";
+
+const Button = styled("button", {
+  base: { className: "px-4 py-2 rounded" },
+  variants: {
+    size: {
+      sm: { className: "text-sm" },
+      lg: { className: "text-lg" },
+    },
+    variant: {
+      primary: { className: "bg-blue-600 text-white" },
+      secondary: { className: "bg-gray-200" },
+    },
+  },
+});
+
+// Usage - same API, but with type safety!
+<Button size="lg" variant="primary">Click</Button>
+```
+
+## Summary
+
+| Library | Best For |
+|---------|----------|
+| **better-styled** | Design systems with parent-child relationships, React Native apps, compound components |
+| **Tailwind Variants** | Class generation with slots, projects that need responsive variants |
+| **CVA** | Minimal bundle size, simple class generation |
+| **Windstitch** | Stitches-like API, lightweight styling |
+| **classnames** | Simple conditional class joining without variants |
+
+<Card title="Get Started" icon="rocket" href="/installation">
+  Ready to try better-styled?
+</Card>

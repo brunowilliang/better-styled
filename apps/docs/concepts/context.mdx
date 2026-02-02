@@ -1,0 +1,233 @@
+---
+title: "Share variants between parent and child components"
+sidebarTitle: "Context"
+description: "Context is what makes better-styled special. It lets parent components share their variants with children automatically."
+---
+
+## The Problem
+
+Imagine a Button with an Icon inside. You want the icon size to match the button size.
+
+Without context, you'd do this:
+
+```tsx
+// Repetitive and error-prone
+<Button size="lg">
+  <Icon size="lg" />
+  <span>Click me</span>
+</Button>
+```
+
+If you change the button size, you have to remember to change the icon size too.
+
+## The Solution
+
+With context, the icon knows its parent's size automatically:
+
+```tsx
+// Icon inherits size from Button
+<Button size="lg">
+  <Button.Icon />
+  <Button.Label>Click me</Button.Label>
+</Button>
+```
+
+## Creating a Context
+
+Use `createStyledContext()` to define which variants should be shared.
+
+```tsx
+import { createStyledContext } from "better-styled";
+
+const ButtonContext = createStyledContext({
+  size: ["sm", "md", "lg"],
+  variant: ["primary", "secondary", "ghost"],
+});
+```
+
+The arrays define the possible values. TypeScript will infer the union types automatically.
+
+## Connecting Components
+
+Pass the context to each component that should participate.
+
+```tsx
+import { styled, withSlots } from "better-styled";
+
+// Parent component
+const ButtonRoot = styled("button", {
+  context: ButtonContext,
+  base: { className: "inline-flex items-center gap-2" },
+  variants: {
+    size: {
+      sm: { className: "h-8 px-3 text-sm" },
+      md: { className: "h-10 px-4 text-base" },
+      lg: { className: "h-12 px-6 text-lg" },
+    },
+    variant: {
+      primary: { className: "bg-blue-600 text-white" },
+      secondary: { className: "bg-gray-200 text-gray-900" },
+      ghost: { className: "hover:bg-gray-100" },
+    },
+  },
+});
+
+// Child component - inherits from context
+const ButtonIcon = styled("span", {
+  context: ButtonContext,
+  base: { className: "flex-shrink-0" },
+  variants: {
+    size: {
+      sm: { className: "w-4 h-4" },
+      md: { className: "w-5 h-5" },
+      lg: { className: "w-6 h-6" },
+    },
+  },
+});
+
+// Another child
+const ButtonLabel = styled("span", {
+  context: ButtonContext,
+  variants: {
+    size: {
+      sm: { className: "text-sm" },
+      md: { className: "text-base" },
+      lg: { className: "text-lg" },
+    },
+  },
+});
+
+// Combine into compound component
+export const Button = withSlots(ButtonRoot, {
+  Icon: ButtonIcon,
+  Label: ButtonLabel,
+});
+```
+
+## How It Works
+
+When you pass variant props to the parent:
+
+1. The parent renders with those variants
+2. It wraps its children in a context provider
+3. Children with the same context read the values
+4. Children apply matching variants automatically
+
+```tsx
+<Button size="lg" variant="primary">
+  <Button.Icon>★</Button.Icon>
+  <Button.Label>Star</Button.Label>
+</Button>
+
+// ButtonIcon gets size="lg" from context
+// ButtonLabel gets size="lg" from context
+```
+
+## Overriding Context
+
+Children can override the context values when needed.
+
+```tsx
+<Button size="lg">
+  <Button.Icon />           {/* size="lg" from context */}
+  <Button.Label size="sm">  {/* size="sm" override */}
+    Small text in large button
+  </Button.Label>
+</Button>
+```
+
+Direct props always win over context values.
+
+## Boolean Variants
+
+For true/false variants, use the special `["boolean"]` marker.
+
+```tsx
+const ButtonContext = createStyledContext({
+  size: ["sm", "md", "lg"],
+  isDisabled: ["boolean"],  // Becomes TypeScript boolean
+});
+
+const ButtonRoot = styled("button", {
+  context: ButtonContext,
+  variants: {
+    isDisabled: {
+      true: { className: "opacity-50", disabled: true },
+    },
+  },
+});
+```
+
+Just define `true`. You don't need `false: {}`. When using the component, pass actual booleans:
+
+```tsx
+<Button isDisabled>        {/* Works */}
+<Button isDisabled={true}> {/* Same */}
+<Button isDisabled={false}> {/* Explicitly not disabled */}
+```
+
+<Note>
+  ⚠️ Use `isDisabled` instead of `disabled` to avoid shadowing the native `disabled` prop on elements like `button` or `Pressable`.
+</Note>
+
+## Variant Priority
+
+When multiple sources provide variant values, this is the priority order (highest wins):
+
+1. 🥇 **Props passed directly** to the component
+2. 🥈 **Context values** from parent
+3. 🥉 **defaultVariants** in config
+
+```tsx
+const ButtonContext = createStyledContext({
+  size: ["sm", "md", "lg"],
+});
+
+const ButtonLabel = styled("span", {
+  context: ButtonContext,
+  defaultVariants: {
+    size: "md",  // Lowest priority
+  },
+});
+
+<Button size="lg">           {/* Context provides size="lg" */}
+  <Button.Label />           {/* Gets size="lg" from context */}
+  <Button.Label size="sm" /> {/* Gets size="sm" from direct prop */}
+</Button>
+```
+
+## Nested Contexts
+
+If you nest components with the same context, the nearest parent wins.
+
+```tsx
+<Button size="lg">
+  <Button.Label>Large</Button.Label>
+
+  <Button size="sm">  {/* New context scope */}
+    <Button.Label>Small</Button.Label>
+  </Button>
+</Button>
+```
+
+## Without Context
+
+Not every component needs context. For standalone components, just omit it:
+
+```tsx
+// No context - variants are local only
+const Badge = styled("span", {
+  variants: {
+    color: {
+      gray: { className: "bg-gray-100" },
+      red: { className: "bg-red-100" },
+    },
+  },
+});
+```
+
+Use context when you have parent-child relationships. Skip it for standalone elements.
+
+<Card title="Next: Slots" icon="arrow-right" href="/concepts/slots">
+  Build compound components with dot notation
+</Card>

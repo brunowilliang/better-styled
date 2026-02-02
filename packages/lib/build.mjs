@@ -14,8 +14,8 @@ const result = await Bun.build({
 	target: "browser",
 	format: "esm",
 	splitting: true,
-	sourcemap: "external",
-	minify: false,
+	sourcemap: "none",
+	minify: true,
 	external: ["react", "react-dom", "react-native"],
 });
 

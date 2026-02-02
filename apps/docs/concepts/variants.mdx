@@ -1,0 +1,219 @@
+---
+title: "Understanding the variant system"
+sidebarTitle: "Variants"
+description: "Variants are the building blocks of your component API. They let you define discrete style options that users can mix and match."
+---
+
+## Basic Variants
+
+Each variant has a name and a set of options. Each option defines props to apply.
+
+```tsx
+const Badge = styled("span", {
+  base: { className: "inline-flex items-center rounded-full font-medium" },
+  variants: {
+    color: {
+      gray: { className: "bg-gray-100 text-gray-800" },
+      red: { className: "bg-red-100 text-red-800" },
+      green: { className: "bg-green-100 text-green-800" },
+      blue: { className: "bg-blue-100 text-blue-800" },
+    },
+    size: {
+      sm: { className: "px-2 py-0.5 text-xs" },
+      md: { className: "px-2.5 py-0.5 text-sm" },
+      lg: { className: "px-3 py-1 text-base" },
+    },
+  },
+});
+
+// Mix and match
+<Badge color="green" size="sm">Active</Badge>
+<Badge color="red" size="lg">Error</Badge>
+```
+
+## Boolean Variants
+
+For toggle-style variants, just define `true`. You don't need `false: {}`.
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    isDisabled: {
+      true: {
+        className: "opacity-50 cursor-not-allowed",
+        disabled: true,
+      },
+    },
+    isLoading: {
+      true: { className: "animate-pulse" },
+    },
+  },
+});
+
+<Button isDisabled>Can't click</Button>
+<Button isLoading>Processing...</Button>
+```
+
+<Note>
+  ⚠️ Avoid naming variants after existing component props. Use `isDisabled` instead of `disabled` to prevent shadowing native props.
+</Note>
+
+<Note>
+  With context, you can use the special `["boolean"]` syntax to get proper boolean type inference. See [Context](/concepts/context#boolean-variants) for details.
+</Note>
+
+## Default Variants
+
+Set sensible defaults so users don't have to specify everything.
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    size: {
+      sm: { className: "h-8" },
+      md: { className: "h-10" },
+      lg: { className: "h-12" },
+    },
+    variant: {
+      primary: { className: "bg-blue-600" },
+      secondary: { className: "bg-gray-200" },
+    },
+  },
+  defaultVariants: {
+    size: "md",
+    variant: "primary",
+  },
+});
+
+// All of these render the same:
+<Button />
+<Button size="md" />
+<Button variant="primary" />
+<Button size="md" variant="primary" />
+```
+
+## Compound Variants
+
+Sometimes a specific combination of variants needs special styling. That's what `compoundVariants` is for.
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    variant: {
+      solid: { className: "text-white" },
+      outline: { className: "bg-transparent border-2" },
+    },
+    color: {
+      blue: {},
+      red: {},
+    },
+  },
+  compoundVariants: [
+    // Solid + Blue
+    {
+      variant: "solid",
+      color: "blue",
+      props: { className: "bg-blue-600 hover:bg-blue-700" },
+    },
+    // Solid + Red
+    {
+      variant: "solid",
+      color: "red",
+      props: { className: "bg-red-600 hover:bg-red-700" },
+    },
+    // Outline + Blue
+    {
+      variant: "outline",
+      color: "blue",
+      props: { className: "border-blue-600 text-blue-600" },
+    },
+    // Outline + Red
+    {
+      variant: "outline",
+      color: "red",
+      props: { className: "border-red-600 text-red-600" },
+    },
+  ],
+});
+```
+
+The compound variant applies only when **all** specified conditions match.
+
+### When to Use Compound Variants
+
+✅ Use compound variants when:
+
+- **Two variants interact visually** - like `variant` and `color` determining background AND text color together
+- **Specific combinations need exceptions** - like adding a shadow only for large primary buttons
+- **You want to avoid CSS conflicts** - compound variants let you be explicit about combinations
+
+⚠️ Don't overuse them. If every combination needs a compound variant, your design system might need restructuring.
+
+## Multiple Compound Variants
+
+You can define multiple compound variants that apply simultaneously.
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    size: { sm: {}, lg: {} },
+    variant: { primary: {}, secondary: {} },
+    elevated: { true: {}, false: {} },
+  },
+  compoundVariants: [
+    // Large primary buttons get a shadow
+    {
+      size: "lg",
+      variant: "primary",
+      props: { className: "shadow-lg" },
+    },
+    // Elevated buttons get a border
+    {
+      elevated: true,
+      props: { className: "border-b-4" },
+    },
+    // Large elevated primary buttons get extra shadow
+    {
+      size: "lg",
+      variant: "primary",
+      elevated: true,
+      props: { className: "shadow-xl" },
+    },
+  ],
+});
+
+// size="lg" + variant="primary" + elevated={true}
+// Gets: shadow-lg (from first), border-b-4 (from second), shadow-xl (from third)
+```
+
+All matching compound variants apply. Class conflicts are resolved by `tailwind-merge`.
+
+## Variant Props vs Component Props
+
+Variant props are removed before being passed to the underlying component. Only "real" props reach the DOM.
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    size: {
+      sm: { className: "h-8" },
+      lg: { className: "h-12" },
+    },
+  },
+});
+
+<Button size="lg" type="submit" aria-label="Submit form">
+  Submit
+</Button>
+
+// Rendered HTML:
+// <button class="h-12" type="submit" aria-label="Submit form">Submit</button>
+//
+// Note: "size" doesn't appear in the DOM
+```
+
+This means you can use any variant name without worrying about HTML attribute conflicts.
+
+<Card title="Next: Context" icon="arrow-right" href="/concepts/context">
+  Learn how variants propagate from parent to child
+</Card>

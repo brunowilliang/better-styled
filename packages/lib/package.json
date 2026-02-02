@@ -1,22 +1,21 @@
 {
 	"name": "better-styled",
-	"description": "A powerful library for creating React/React Native components",
-	"version": "2.0.0",
-	"main": "./index.ts",
-	"module": "./index.ts",
-	"types": "./index.ts",
+	"description": "A powerful library for creating React/React Native components with variants, slots and context",
+	"version": "1.0.0-beta.2",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"type": "module",
+	"sideEffects": false,
 	"exports": {
 		".": {
-			"import": "./index.ts",
-			"require": "./dist/index.js",
-			"types": "./index.ts"
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
 		}
 	},
 	"files": [
-		"dist",
-		"README.md",
-		"CHANGELOG.md"
+		"dist"
 	],
 	"scripts": {
 		"clean": "rm -rf dist",
@@ -47,6 +46,7 @@
 		"styled-components",
 		"styled-system",
 		"tamagui",
+		"uniwind",
 		"nativewind",
 		"tailwind",
 		"css-in-js",
@@ -62,7 +62,7 @@
 		"type": "git",
 		"url": "https://github.com/brunowilliang/better-styled"
 	},
-	"homepage": "https://usestyled.com",
+	"homepage": "https://better-styled.com",
 	"bugs": {
 		"url": "https://github.com/brunowilliang/better-styled/discussions"
 	}

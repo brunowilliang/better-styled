@@ -1,0 +1,207 @@
+---
+title: "Build compound components with the slots pattern"
+sidebarTitle: "Slots"
+description: "Slots let you build compound components with intuitive dot notation, like <Card.Header> or <Button.Icon>."
+---
+
+## The Pattern
+
+Instead of importing multiple components:
+
+```tsx
+import { CardRoot, CardHeader, CardBody, CardFooter } from "./Card";
+
+<CardRoot>
+  <CardHeader>Title</CardHeader>
+  <CardBody>Content</CardBody>
+  <CardFooter>Actions</CardFooter>
+</CardRoot>
+```
+
+You import one component with slots:
+
+```tsx
+import { Card } from "./Card";
+
+<Card>
+  <Card.Header>Title</Card.Header>
+  <Card.Body>Content</Card.Body>
+  <Card.Footer>Actions</Card.Footer>
+</Card>
+```
+
+Cleaner imports. Clear relationships. Better discoverability.
+
+## Creating Slots
+
+Use `withSlots()` to attach child components to a parent.
+
+```tsx
+import { styled, withSlots } from "better-styled";
+
+// Create individual components
+const CardRoot = styled("div", {
+  base: { className: "rounded-xl border bg-white shadow-sm" },
+});
+
+const CardHeader = styled("div", {
+  base: { className: "px-6 py-4 border-b font-semibold" },
+});
+
+const CardBody = styled("div", {
+  base: { className: "px-6 py-4" },
+});
+
+const CardFooter = styled("div", {
+  base: { className: "px-6 py-4 border-t bg-gray-50" },
+});
+
+// Combine them
+export const Card = withSlots(CardRoot, {
+  Header: CardHeader,
+  Body: CardBody,
+  Footer: CardFooter,
+});
+```
+
+Now `Card.Header`, `Card.Body`, and `Card.Footer` are available.
+
+## Slots + Context
+
+Slots become powerful when combined with context. Children automatically inherit parent variants.
+
+```tsx
+import { createStyledContext, styled, withSlots } from "better-styled";
+
+const AlertContext = createStyledContext({
+  intent: ["info", "success", "warning", "error"],
+});
+
+const AlertRoot = styled("div", {
+  context: AlertContext,
+  base: { className: "rounded-lg p-4 flex gap-3" },
+  variants: {
+    intent: {
+      info: { className: "bg-blue-50 text-blue-900" },
+      success: { className: "bg-green-50 text-green-900" },
+      warning: { className: "bg-yellow-50 text-yellow-900" },
+      error: { className: "bg-red-50 text-red-900" },
+    },
+  },
+});
+
+const AlertIcon = styled("div", {
+  context: AlertContext,
+  base: { className: "flex-shrink-0 w-5 h-5" },
+  variants: {
+    intent: {
+      info: { className: "text-blue-500" },
+      success: { className: "text-green-500" },
+      warning: { className: "text-yellow-500" },
+      error: { className: "text-red-500" },
+    },
+  },
+});
+
+const AlertTitle = styled("h3", {
+  context: AlertContext,
+  base: { className: "font-medium" },
+});
+
+const AlertDescription = styled("p", {
+  context: AlertContext,
+  base: { className: "text-sm opacity-90" },
+});
+
+export const Alert = withSlots(AlertRoot, {
+  Icon: AlertIcon,
+  Title: AlertTitle,
+  Description: AlertDescription,
+});
+```
+
+Usage:
+
+```tsx
+<Alert intent="success">
+  <Alert.Icon>✓</Alert.Icon>
+  <div>
+    <Alert.Title>Payment successful</Alert.Title>
+    <Alert.Description>
+      Your order has been confirmed.
+    </Alert.Description>
+  </div>
+</Alert>
+```
+
+All slots automatically get `intent="success"` styling.
+
+## Nested Slots
+
+You can add slots to components that already have slots.
+
+```tsx
+const BaseCard = withSlots(CardRoot, {
+  Header: CardHeader,
+  Body: CardBody,
+});
+
+// Add more slots
+const Card = withSlots(BaseCard, {
+  Footer: CardFooter,
+  Actions: CardActions,
+});
+
+// Has all four: Header, Body, Footer, Actions
+```
+
+## displayName
+
+Slots preserve the original component's display name for React DevTools.
+
+```tsx
+const Button = withSlots(ButtonRoot, {
+  Icon: ButtonIcon,
+  Label: ButtonLabel,
+});
+
+// In React DevTools:
+// <ButtonRoot>
+//   <ButtonIcon />
+//   <ButtonLabel />
+// </ButtonRoot>
+```
+
+## When to Use Slots
+
+✅ **Use slots when:**
+- Components are meant to be used together
+- You want dot notation for better DX
+- Parent-child relationships should be obvious
+
+❌ **Don't use slots when:**
+- Components are independent
+- There's no clear parent-child relationship
+- You're just grouping unrelated components
+
+## Slots vs Children
+
+Slots don't restrict what children you can use. They're just a convenient way to access related components.
+
+```tsx
+<Card>
+  <Card.Header>Title</Card.Header>
+  <Card.Body>
+    {/* You can still use any content */}
+    <p>Regular paragraph</p>
+    <Button>A button</Button>
+    <Alert intent="info">
+      <Alert.Title>Tip</Alert.Title>
+    </Alert>
+  </Card.Body>
+</Card>
+```
+
+<Card title="Next: React Native Guide" icon="arrow-right" href="/guides/react-native">
+  Using better-styled with React Native
+</Card>

@@ -1,0 +1,190 @@
+---
+title: "Build your first component with better-styled"
+sidebarTitle: "Quickstart"
+description: "Learn the three core concepts: styled(), createStyledContext(), and withSlots()."
+---
+
+Let's build a Button component from scratch. You'll learn the three core concepts:
+1. `styled()` - create components with variants
+2. `createStyledContext()` - share variants between components
+3. `withSlots()` - compose compound components
+
+## Step 1: A Simple Styled Component
+
+Start with the basics. Create a button with size variants.
+
+```tsx
+import { styled } from "better-styled";
+
+const Button = styled("button", {
+  base: {
+    className: "font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700",
+  },
+  variants: {
+    size: {
+      sm: { className: "px-3 py-1.5 text-sm" },
+      md: { className: "px-4 py-2 text-base" },
+      lg: { className: "px-6 py-3 text-lg" },
+    },
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
+```
+
+Use it:
+
+```tsx
+<Button>Default (md)</Button>
+<Button size="sm">Small</Button>
+<Button size="lg">Large</Button>
+```
+
+That's the foundation. `base` applies always, `variants` apply based on props.
+
+## Step 2: Add More Variants
+
+Let's add a `variant` prop for different styles.
+
+```tsx
+const Button = styled("button", {
+  base: {
+    className: "font-medium rounded-lg transition-colors",
+  },
+  variants: {
+    variant: {
+      primary: { className: "bg-blue-600 text-white hover:bg-blue-700" },
+      secondary: { className: "bg-gray-200 text-gray-900 hover:bg-gray-300" },
+      ghost: { className: "bg-transparent text-gray-700 hover:bg-gray-100" },
+    },
+    size: {
+      sm: { className: "px-3 py-1.5 text-sm" },
+      md: { className: "px-4 py-2 text-base" },
+      lg: { className: "px-6 py-3 text-lg" },
+    },
+  },
+  defaultVariants: {
+    variant: "primary",
+    size: "md",
+  },
+});
+```
+
+```tsx
+<Button variant="primary">Primary</Button>
+<Button variant="secondary" size="lg">Large Secondary</Button>
+<Button variant="ghost" size="sm">Small Ghost</Button>
+```
+
+## Step 3: Compound Variants
+
+Sometimes you need special styling when multiple variants combine. That's what `compoundVariants` is for.
+
+```tsx
+const Button = styled("button", {
+  base: {
+    className: "font-medium rounded-lg transition-colors",
+  },
+  variants: {
+    variant: {
+      primary: { className: "bg-blue-600 text-white" },
+      secondary: { className: "bg-gray-200 text-gray-900" },
+    },
+    size: {
+      sm: { className: "px-3 py-1.5 text-sm" },
+      lg: { className: "px-6 py-3 text-lg" },
+    },
+  },
+  compoundVariants: [
+    {
+      variant: "primary",
+      size: "lg",
+      props: { className: "shadow-lg shadow-blue-500/30" },
+    },
+  ],
+});
+```
+
+Now `<Button variant="primary" size="lg">` gets an extra shadow that smaller or secondary buttons don't.
+
+## Step 4: Context for Parent-Child Communication
+
+Here's where better-styled shines. Let's add a label to our button that automatically matches the button's size.
+
+```tsx
+import { createStyledContext, styled, withSlots } from "better-styled";
+
+// Define shared variants
+const ButtonContext = createStyledContext({
+  size: ["sm", "md", "lg"],
+  variant: ["primary", "secondary"],
+});
+
+// Parent: the button itself
+const ButtonRoot = styled("button", {
+  context: ButtonContext,
+  base: { className: "inline-flex items-center gap-2 font-medium rounded-lg" },
+  variants: {
+    variant: {
+      primary: { className: "bg-blue-600 text-white" },
+      secondary: { className: "bg-gray-200 text-gray-900" },
+    },
+    size: {
+      sm: { className: "px-3 py-1.5" },
+      md: { className: "px-4 py-2" },
+      lg: { className: "px-6 py-3" },
+    },
+  },
+});
+
+// Child: inherits size from parent automatically
+const ButtonLabel = styled("span", {
+  context: ButtonContext,
+  variants: {
+    size: {
+      sm: { className: "text-sm" },
+      md: { className: "text-base" },
+      lg: { className: "text-lg" },
+    },
+  },
+});
+
+// Combine into compound component
+export const Button = withSlots(ButtonRoot, {
+  Label: ButtonLabel,
+});
+```
+
+Usage:
+
+```tsx
+<Button variant="primary" size="lg">
+  <Button.Label>Click me</Button.Label>
+</Button>
+```
+
+`Button.Label` automatically receives `size="lg"` from the parent. No prop drilling.
+
+## What You've Learned
+
+1. ✅ **`styled(component, config)`** - Creates components with variant support
+2. ✅ **`createStyledContext(variants)`** - Defines which variants should be shared
+3. ✅ **`withSlots(component, slots)`** - Creates compound components with dot notation
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Understanding styled()" icon="palette" href="/concepts/styled">
+    Deep dive into the main API
+  </Card>
+  <Card title="Variant System" icon="sliders" href="/concepts/variants">
+    Learn about compound variants and defaults
+  </Card>
+  <Card title="Context Propagation" icon="diagram-project" href="/concepts/context">
+    Master parent-child communication
+  </Card>
+  <Card title="Compound Components" icon="cubes" href="/concepts/slots">
+    Build complex component APIs
+  </Card>
+</CardGroup>

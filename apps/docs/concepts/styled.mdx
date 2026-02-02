@@ -1,0 +1,254 @@
+---
+title: "The core function for creating styled components"
+sidebarTitle: "styled"
+description: "The styled() function is the heart of better-styled. It takes any React component (or HTML element) and adds variant support."
+---
+
+```tsx
+import { styled } from "better-styled";
+
+const Button = styled("button", {
+  base: { className: "px-4 py-2 rounded" },
+  variants: {
+    size: {
+      sm: { className: "text-sm" },
+      lg: { className: "text-lg" },
+    },
+  },
+});
+```
+
+## Configuration
+
+### `base`
+
+Props that always apply, regardless of variants.
+
+```tsx
+const Card = styled("div", {
+  base: {
+    className: "rounded-xl border shadow-sm",
+    role: "article",
+  },
+});
+```
+
+Any valid prop for the component works here: `className`, `style`, event handlers, ARIA attributes, etc.
+
+### `variants`
+
+Define your variant options. Each variant is a named group with multiple options.
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    size: {
+      sm: { className: "h-8 px-3 text-sm" },
+      md: { className: "h-10 px-4 text-base" },
+      lg: { className: "h-12 px-6 text-lg" },
+    },
+    intent: {
+      primary: { className: "bg-blue-600 text-white" },
+      danger: { className: "bg-red-600 text-white" },
+      ghost: { className: "bg-transparent" },
+    },
+  },
+});
+
+// Usage
+<Button size="lg" intent="danger">Delete</Button>
+```
+
+### `defaultVariants`
+
+Set which variant values apply when not specified.
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    size: {
+      sm: { className: "text-sm" },
+      md: { className: "text-base" },
+      lg: { className: "text-lg" },
+    },
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
+
+// These are equivalent:
+<Button />
+<Button size="md" />
+```
+
+### `compoundVariants`
+
+Apply styles when specific variant combinations occur.
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    intent: {
+      primary: { className: "bg-blue-600" },
+      danger: { className: "bg-red-600" },
+    },
+    isOutlined: {
+      true: { className: "bg-transparent border-2" },
+    },
+  },
+  compoundVariants: [
+    {
+      intent: "primary",
+      isOutlined: true,
+      props: { className: "border-blue-600 text-blue-600" },
+    },
+    {
+      intent: "danger",
+      isOutlined: true,
+      props: { className: "border-red-600 text-red-600" },
+    },
+  ],
+});
+```
+
+When `intent="primary"` AND `isOutlined={true}`, the compound variant kicks in.
+
+### `context`
+
+Connect to a shared context for variant propagation. See [Context](/concepts/context) for details.
+
+```tsx
+const ButtonContext = createStyledContext({
+  size: ["sm", "md", "lg"],
+});
+
+const Button = styled("button", {
+  context: ButtonContext,
+  // variants automatically sync with context
+});
+```
+
+## Props Merging
+
+better-styled intelligently merges props from different sources.
+
+### Priority Order
+
+From lowest to highest priority:
+1. 🥉 `base`
+2. 🥈 `variants`
+3. 🥈 `compoundVariants`
+4. 🥇 Props passed directly to the component
+
+```tsx
+const Button = styled("button", {
+  base: { className: "px-4" },
+  variants: {
+    size: {
+      lg: { className: "px-8" }, // overrides base px-4
+    },
+  },
+});
+
+// Direct props have highest priority
+<Button size="lg" className="px-12">
+  {/* Final className: "px-12" (direct prop wins) */}
+</Button>
+```
+
+### className
+
+Classes are merged using `tailwind-merge`, which handles Tailwind conflicts intelligently.
+
+```tsx
+const Button = styled("button", {
+  base: { className: "px-4 py-2 bg-blue-500" },
+  variants: {
+    size: {
+      lg: { className: "px-8 py-4" }, // px and py override, bg stays
+    },
+  },
+});
+```
+
+### style
+
+Style objects are merged with `Object.assign`. Later values override earlier ones.
+
+```tsx
+const Box = styled("div", {
+  base: { style: { padding: 16, margin: 8 } },
+  variants: {
+    spacing: {
+      large: { style: { padding: 32 } }, // only padding overrides
+    },
+  },
+});
+```
+
+### Event Handlers
+
+Here's something special: event handlers are **composed**, not overwritten.
+
+```tsx
+const Button = styled("button", {
+  base: {
+    onClick: () => console.log("base click"),
+  },
+  variants: {
+    tracked: {
+      true: {
+        onClick: () => console.log("tracked click"),
+      },
+    },
+  },
+});
+
+// Both handlers run!
+<Button tracked onClick={() => console.log("user click")}>
+  {/* Logs: "base click", "tracked click", "user click" */}
+</Button>
+```
+
+This is powerful for analytics, logging, or any case where you want to add behavior without replacing it.
+
+## Works With Any Component
+
+`styled()` works with HTML elements, React components, and React Native components.
+
+```tsx
+// HTML element
+const Button = styled("button", { ... });
+
+// React component
+const StyledLink = styled(Link, { ... });
+
+// React Native
+const StyledPressable = styled(Pressable, { ... });
+```
+
+The only requirement: the component must accept the props you define in your variants.
+
+## TypeScript
+
+Types are fully inferred. No manual typing needed.
+
+```tsx
+const Button = styled("button", {
+  variants: {
+    size: {
+      sm: {},
+      md: {},
+      lg: {},
+    },
+  },
+});
+
+// ✅ TypeScript knows: size?: "sm" | "md" | "lg"
+<Button size="xl" /> // ❌ Error: "xl" is not valid
+```
+
+<Card title="Next: Variants" icon="arrow-right" href="/concepts/variants">
+  Deep dive into the variant system
+</Card>

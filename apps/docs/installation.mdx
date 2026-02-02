@@ -1,0 +1,87 @@
+---
+title: "Install better-styled in your project"
+sidebarTitle: "Installation"
+description: "Get started with better-styled in under a minute. Works with React, React Native, Expo, Next.js, Vite, and more."
+---
+
+<Tabs>
+  <Tab title="npm">
+    ```bash
+    npm install better-styled
+    ```
+  </Tab>
+  <Tab title="yarn">
+    ```bash
+    yarn add better-styled
+    ```
+  </Tab>
+  <Tab title="pnpm">
+    ```bash
+    pnpm add better-styled
+    ```
+  </Tab>
+  <Tab title="bun">
+    ```bash
+    bun add better-styled
+    ```
+  </Tab>
+</Tabs>
+
+## Requirements
+
+- ⚛️ React 18+ or React Native
+- 🎨 Tailwind CSS (required)
+- 📘 TypeScript 5.0+ (recommended)
+
+## Tailwind CSS Setup
+
+better-styled uses `className` for styling. You need Tailwind CSS configured in your project.
+
+<Tabs>
+  <Tab title="Web (React)">
+    Follow the [Tailwind CSS installation guide](https://tailwindcss.com/docs/installation) for your framework (Next.js, Vite, etc.).
+  </Tab>
+  <Tab title="React Native">
+    You need a Tailwind-to-StyleSheet solution:
+
+    - [NativeWind](https://www.nativewind.dev/) - Tailwind CSS utilities for React Native
+    - [Uniwind](https://uniwind.dev/) - High-performance Tailwind bindings for React Native
+
+    Follow their installation guides first.
+  </Tab>
+</Tabs>
+
+## That's it ✨
+
+✅ No extra configuration. No providers to wrap. No build plugins.
+
+Just import and use:
+
+```tsx
+import { styled } from "better-styled";
+```
+
+## Smart Class Merging
+
+better-styled uses `tailwind-merge` under the hood to handle class conflicts intelligently:
+
+```tsx
+const Button = styled("button", {
+  base: { className: "px-4 py-2 rounded" },
+  variants: {
+    size: {
+      sm: { className: "px-2 py-1 text-sm" },  // overrides px-4 py-2
+      lg: { className: "px-6 py-3 text-lg" },  // overrides px-4 py-2
+    },
+  },
+});
+```
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Build your first component
+  </Card>
+  <Card title="React Native Guide" icon="mobile" href="/guides/react-native">
+    Using with Expo and React Native
+  </Card>
+</CardGroup>

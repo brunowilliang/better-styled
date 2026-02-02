@@ -1,0 +1,136 @@
+---
+title: "better-styled"
+sidebarTitle: "Introduction"
+description: "Type-safe styled components with variant propagation for React and React Native. A minimalist approach to building consistent UI components."
+---
+
+<CardGroup cols={2}>
+  <Card title="Type-Safe by Default" icon="shield-check">
+    Full TypeScript inference without manual typing or `as const`
+  </Card>
+  <Card title="Context Propagation" icon="diagram-project">
+    Variants automatically flow from parent to child components
+  </Card>
+  <Card title="Compound Components" icon="cubes">
+    Build complex components with the slots pattern
+  </Card>
+  <Card title="Universal" icon="mobile-screen">
+    Same API for React Web and React Native
+  </Card>
+</CardGroup>
+
+## The Problem
+
+When building UI components, you often need child elements to match their parent's style. A button's text should match the button's size. A card's header should match the card's variant.
+
+The typical solution? Prop drilling.
+
+```tsx
+// Without better-styled: manual prop drilling
+<Button size="lg" variant="primary">
+  <ButtonIcon size="lg" variant="primary" name="check" />
+  <ButtonText size="lg" variant="primary">Submit</ButtonText>
+</Button>
+```
+
+This gets tedious. And error-prone.
+
+## The Solution
+
+With better-styled, you define the relationship once. Children inherit automatically.
+
+```tsx
+// With better-styled: automatic inheritance
+<Button size="lg" variant="primary">
+  <Button.Icon name="check" />
+  <Button.Label>Submit</Button.Label>
+</Button>
+```
+
+Both `Button.Icon` and `Button.Label` know they should render as `size="lg"` and `variant="primary"`. No repetition needed.
+
+## Quick Example
+
+```tsx
+import { createStyledContext, styled, withSlots } from "better-styled";
+import { Pressable, Text } from "react-native";
+
+// 1. Define your variants
+const ButtonContext = createStyledContext({
+  size: ["sm", "md", "lg"],
+  variant: ["primary", "secondary"],
+});
+
+// 2. Create the parent component
+const ButtonRoot = styled(Pressable, {
+  context: ButtonContext,
+  base: { className: "rounded-lg items-center justify-center" },
+  variants: {
+    size: {
+      sm: { className: "px-3 py-1.5" },
+      md: { className: "px-4 py-2" },
+      lg: { className: "px-6 py-3" },
+    },
+    variant: {
+      primary: { className: "bg-blue-600" },
+      secondary: { className: "bg-gray-600" },
+    },
+  },
+});
+
+// 3. Create child that inherits from context
+const ButtonLabel = styled(Text, {
+  context: ButtonContext,
+  base: { className: "font-medium text-white" },
+  variants: {
+    size: {
+      sm: { className: "text-sm" },
+      md: { className: "text-base" },
+      lg: { className: "text-lg" },
+    },
+  },
+});
+
+// 4. Export as compound component
+export const Button = withSlots(ButtonRoot, {
+  Label: ButtonLabel,
+});
+```
+
+Now use it:
+
+```tsx
+<Button size="lg" variant="primary">
+  <Button.Label>Click me</Button.Label>
+</Button>
+```
+
+The label automatically gets `size="lg"` from the parent. Clean and maintainable.
+
+## Why better-styled?
+
+| Feature | tailwind-variants | better-styled |
+|---------|-------------------|---------------|
+| Variants | ✅ | ✅ |
+| Compound Variants | ✅ | ✅ |
+| Context Propagation | ❌ | ✅ |
+| Compound Components | ❌ | ✅ |
+| Type Inference | Needs `as const` | ✅ Automatic |
+| React Native | ❌ | ✅ |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Get started in under a minute
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Build your first component
+  </Card>
+  <Card title="React Native" icon="mobile" href="/guides/react-native">
+    Using with Expo and React Native
+  </Card>
+  <Card title="TypeScript" icon="code" href="/guides/typescript">
+    Get the most out of type inference
+  </Card>
+</CardGroup>
