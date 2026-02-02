@@ -19,7 +19,6 @@
 		"CHANGELOG.md"
 	],
 	"scripts": {
-		"test": "bun test",
 		"clean": "rm -rf dist",
 		"build": "bun run ./build.mjs",
 		"build:types": "tsc --project tsconfig.json",
@@ -61,10 +60,10 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Brunowilliang/use-styled"
+		"url": "https://github.com/brunowilliang/better-styled"
 	},
 	"homepage": "https://usestyled.com",
 	"bugs": {
-		"url": "https://github.com/Brunowilliang/use-styled/discussions"
+		"url": "https://github.com/brunowilliang/better-styled/discussions"
 	}
 }
