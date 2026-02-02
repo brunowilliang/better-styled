@@ -14,15 +14,11 @@
 		"releaseName": "v${version}",
 		"autoGenerate": false
 	},
-	"npm": {
-		"publish": true,
-		"publishPath": "."
-	},
+	"npm": false,
 	"hooks": {
-		"before:init": [
-			"bun run lint"
-		],
-		"after:bump": "bun run build"
+		"before:init": ["bun run lint"],
+		"after:bump": "bun run build",
+		"after:git:release": "bun publish"
 	},
 	"plugins": {
 		"@release-it/conventional-changelog": {
