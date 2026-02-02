@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+
+## [1.0.1-beta.0](https://github.com/brunowilliang/better-styled/compare/v1.0.0-beta.5...v1.0.1-beta.0) (2026-02-02)
+
 ## 1.0.0-beta.5 (2026-02-02)
 
 ### Features
