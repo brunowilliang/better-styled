@@ -29,5 +29,6 @@
   "overrides": {
     "react": "19.1.0",
     "react-dom": "19.1.0"
-  }
+  },
+  "version": "1.0.1-beta.1"
 }
