@@ -14,13 +14,11 @@
 		"releaseName": "v${version}",
 		"autoGenerate": false
 	},
-	"npm": {
-		"publish": true,
-		"publishPath": "./packages/lib"
-	},
+	"npm": false,
 	"hooks": {
 		"before:init": ["cd packages/lib && bun run lint"],
-		"after:bump": "cd packages/lib && bun run build"
+		"after:bump": "cd packages/lib && bun run build",
+		"after:release": "cd packages/lib && npm publish"
 	},
 	"plugins": {
 		"@release-it/conventional-changelog": {
