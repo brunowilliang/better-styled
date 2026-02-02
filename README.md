@@ -1,18 +1,18 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://better-styled.com/assets/logo_dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://better-styled.com/assets/logo_light.svg">
-    <img alt="better-styled" src="https://better-styled.com/assets/logo_light.svg" width="400">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/brunowilliang/better-styled/master/apps/docs/assets/logo_dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/brunowilliang/better-styled/master/apps/docs/assets/logo_light.svg">
+    <img alt="better-styled" src="https://raw.githubusercontent.com/brunowilliang/better-styled/master/apps/docs/assets/logo_light.svg" width="400">
   </picture>
 </p>
 
 <p align="center">
-  Type-safe styled components with variant propagation for React and React Native.
+  Type-safe styled components with variant propagation for React and Re
 </p>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/better-styled"><img src="https://img.shields.io/npm/v/better-styled?style=flat-square&color=623791" alt="npm version"></a>
-  <a href="https://github.com/brunowilliang/better-styled/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/better-styled?style=flat-square&color=623791" alt="license"></a>
+  <a href="https://github.com/brunowilliang/better-styled/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/better-styled?style=flat-square&color=623791" alt="license"></a>
   <a href="https://www.npmjs.com/package/better-styled"><img src="https://img.shields.io/npm/dm/better-styled?style=flat-square&color=623791" alt="downloads"></a>
 </p>
 
