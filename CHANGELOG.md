@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 
+## [1.0.0](https://github.com/brunowilliang/better-styled/compare/v1.0.0-beta.8...v1.0.0) (2026-02-03)
+
 ## [1.0.0-beta.8](https://github.com/brunowilliang/better-styled/compare/v1.0.0-beta.7...v1.0.0-beta.8) (2026-02-02)
 
 ### Bug Fixes
