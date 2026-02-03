@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [1.0.1](https://github.com/brunowilliang/better-styled/compare/v1.0.0...v1.0.1) (2026-02-03)
+
+### Bug Fixes
+
+* propagate defaultVariants to children via context ([648f225](https://github.com/brunowilliang/better-styled/commit/648f225909c9db23735791060a2c5455eccd1f34))
+
 ## [1.0.0](https://github.com/brunowilliang/better-styled/compare/v1.0.0-beta.8...v1.0.0) (2026-02-03)
 
 ## [1.0.0-beta.8](https://github.com/brunowilliang/better-styled/compare/v1.0.0-beta.7...v1.0.0-beta.8) (2026-02-02)
