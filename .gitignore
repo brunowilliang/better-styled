@@ -8,6 +8,7 @@ dist
 
 # Lock files
 bun.lock
+NEW-FEATURES.md
 
 # Logs
 *.log
