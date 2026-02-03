@@ -107,6 +107,44 @@ const ButtonIcon = styled("span", {
 </Button>;
 ```
 
+### defaultVariants Propagation
+
+When a parent component has `defaultVariants` and shares context with children,
+the children automatically inherit those values—even without explicit props:
+
+```tsx
+const ButtonRoot = styled(Pressable, {
+  context: ButtonContext,
+  variants: {
+    variant: {
+      primary: { className: "bg-blue-600" },
+      secondary: { className: "bg-gray-200" },
+    },
+  },
+  defaultVariants: {
+    variant: "primary", // This propagates to children via context
+  },
+});
+
+const ButtonLabel = styled(Text, {
+  context: ButtonContext, // Same context = inherits variants
+  variants: {
+    variant: {
+      primary: { className: "text-white" },
+      secondary: { className: "text-gray-900" },
+    },
+  },
+});
+
+// No props needed - children inherit defaultVariants from parent
+<ButtonRoot>
+  <ButtonLabel>Click me</ButtonLabel> {/* Gets variant="primary" automatically */}
+</ButtonRoot>
+```
+
+This is powerful for design systems where sensible defaults cascade through the
+component tree without repetition.
+
 ### withSlots()
 
 Attaches child components as static properties for dot notation.
