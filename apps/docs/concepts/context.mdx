@@ -123,6 +123,60 @@ When you pass variant props to the parent:
 // ButtonLabel gets size="lg" from context
 ```
 
+## Default Variants Propagation
+
+When the parent component has `defaultVariants`, children automatically inherit them—even without explicit props.
+
+```tsx
+import { Pressable, Text } from "react-native";
+
+const ButtonRoot = styled(Pressable, {
+  context: ButtonContext,
+  base: { className: "flex-row items-center justify-center rounded-lg" },
+  variants: {
+    size: {
+      sm: { className: "h-8 px-3" },
+      md: { className: "h-10 px-4" },
+      lg: { className: "h-12 px-6" },
+    },
+    variant: {
+      primary: { className: "bg-blue-600" },
+      secondary: { className: "bg-gray-200" },
+    },
+  },
+  defaultVariants: {
+    size: "md",
+    variant: "primary",  // These propagate to children
+  },
+});
+
+const ButtonLabel = styled(Text, {
+  context: ButtonContext,
+  base: { className: "font-semibold" },
+  variants: {
+    variant: {
+      primary: { className: "text-white" },
+      secondary: { className: "text-gray-900" },
+    },
+  },
+});
+```
+
+Now you can use the component without any props:
+
+```tsx
+// No props needed - defaultVariants are shared
+<Button>
+  <Button.Label>Click me</Button.Label>
+</Button>
+
+// Button gets variant="primary" and size="md"
+// Button.Label gets variant="primary" from parent's defaultVariants
+// Result: white text on blue background
+```
+
+This is powerful for design systems where you want sensible defaults that cascade through the component tree.
+
 ## Overriding Context
 
 Children can override the context values when needed.

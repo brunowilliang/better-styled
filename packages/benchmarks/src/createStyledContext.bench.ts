@@ -388,6 +388,130 @@ group("Context Propagation - Nested Components", () => {
 });
 
 // =============================================================================
+// Benchmarks: defaultVariants Propagation to Children
+// =============================================================================
+
+// Setup: Child components that inherit from context
+const SimpleButtonLabel = styled("span", {
+	context: SimpleContext,
+	base: { className: "btn-label" },
+	variants: {
+		variant: {
+			primary: { className: "label-primary" },
+			secondary: { className: "label-secondary" },
+		},
+		size: {
+			sm: { className: "label-sm" },
+			md: { className: "label-md" },
+			lg: { className: "label-lg" },
+		},
+	},
+});
+
+const MediumButtonLabel = styled("span", {
+	context: MediumContext,
+	base: { className: "btn-label" },
+	variants: {
+		variant: {
+			primary: { className: "label-primary" },
+			secondary: { className: "label-secondary" },
+			outline: { className: "label-outline" },
+			ghost: { className: "label-ghost" },
+		},
+		size: {
+			xs: { className: "label-xs" },
+			sm: { className: "label-sm" },
+			md: { className: "label-md" },
+			lg: { className: "label-lg" },
+			xl: { className: "label-xl" },
+		},
+	},
+});
+
+const ComplexButtonLabel = styled("span", {
+	context: ComplexContext,
+	base: { className: "btn-label" },
+	variants: {
+		variant: {
+			primary: { className: "label-primary" },
+			secondary: { className: "label-secondary" },
+			outline: { className: "label-outline" },
+			ghost: { className: "label-ghost" },
+			link: { className: "label-link" },
+			danger: { className: "label-danger" },
+		},
+		size: {
+			xs: { className: "label-xs" },
+			sm: { className: "label-sm" },
+			md: { className: "label-md" },
+			lg: { className: "label-lg" },
+			xl: { className: "label-xl" },
+		},
+	},
+});
+
+group("defaultVariants Propagation - Parent to Child", () => {
+	// Baseline: Parent with explicit props
+	bench("simple - parent with explicit props", () => {
+		createElement(
+			SimpleButtonWithContext,
+			{ variant: "primary", size: "md" },
+			createElement(SimpleButtonLabel, null, "Click"),
+		);
+	}).baseline();
+
+	// Test: Parent using only defaultVariants (no props)
+	bench("simple - parent with defaultVariants only", () => {
+		createElement(
+			SimpleButtonWithContext,
+			null,
+			createElement(SimpleButtonLabel, null, "Click"),
+		);
+	});
+
+	bench("medium - parent with explicit props", () => {
+		createElement(
+			MediumButtonWithContext,
+			{ variant: "primary", size: "md", disabled: false, loading: false },
+			createElement(MediumButtonLabel, null, "Click"),
+		);
+	});
+
+	bench("medium - parent with defaultVariants only", () => {
+		createElement(
+			MediumButtonWithContext,
+			null,
+			createElement(MediumButtonLabel, null, "Click"),
+		);
+	});
+
+	bench("complex - parent with explicit props", () => {
+		createElement(
+			ComplexButtonWithContext,
+			{
+				variant: "primary",
+				size: "md",
+				rounded: "md",
+				shadow: "none",
+				disabled: false,
+				loading: false,
+				fullWidth: false,
+				iconOnly: false,
+			},
+			createElement(ComplexButtonLabel, null, "Click"),
+		);
+	});
+
+	bench("complex - parent with defaultVariants only", () => {
+		createElement(
+			ComplexButtonWithContext,
+			null,
+			createElement(ComplexButtonLabel, null, "Click"),
+		);
+	});
+});
+
+// =============================================================================
 // Run all benchmarks
 // =============================================================================
 

@@ -98,6 +98,65 @@ describe("createStyledContext", () => {
 			expect(text).toHaveClass("btn-text", "text-secondary", "text-lg");
 		});
 
+		it("should propagate defaultVariants to children when parent has no explicit props", () => {
+			const ButtonContext = createStyledContext({
+				variant: ["primary", "secondary"],
+				size: ["sm", "md", "lg"],
+			});
+
+			const ButtonRoot = styled("button", {
+				context: ButtonContext,
+				base: { className: "btn" },
+				variants: {
+					variant: {
+						primary: { className: "btn-primary" },
+						secondary: { className: "btn-secondary" },
+					},
+					size: {
+						sm: { className: "btn-sm" },
+						md: { className: "btn-md" },
+						lg: { className: "btn-lg" },
+					},
+				},
+				defaultVariants: {
+					variant: "primary",
+					size: "md",
+				},
+			});
+
+			const ButtonLabel = styled("span", {
+				context: ButtonContext,
+				base: { className: "btn-label" },
+				variants: {
+					variant: {
+						primary: { className: "label-primary" },
+						secondary: { className: "label-secondary" },
+					},
+					size: {
+						sm: { className: "label-sm" },
+						md: { className: "label-md" },
+						lg: { className: "label-lg" },
+					},
+				},
+			});
+
+			// Render parent WITHOUT variant props - should use defaultVariants
+			render(
+				<ButtonRoot data-testid="button">
+					<ButtonLabel data-testid="label">Click me</ButtonLabel>
+				</ButtonRoot>,
+			);
+
+			const button = screen.getByTestId("button");
+			const label = screen.getByTestId("label");
+
+			// Parent should use defaultVariants
+			expect(button).toHaveClass("btn", "btn-primary", "btn-md");
+
+			// Child should inherit parent's defaultVariants via context
+			expect(label).toHaveClass("btn-label", "label-primary", "label-md");
+		});
+
 		it("should allow child to override parent variants", () => {
 			const CardContext = createStyledContext({
 				variant: ["default", "elevated"],

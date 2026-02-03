@@ -1,2 +1,91 @@
-@import "tailwindcss";
-@import "uniwind";
+@import 'tailwindcss';
+@import 'uniwind';
+
+/* Scan directories */
+@source '../src';
+
+@layer theme {
+	:root {
+		@variant light {
+			/* HeroUI Semantic Colors */
+			--color-accent: oklch(69.31% 0.1496 156.08);
+			--color-accent-foreground: oklch(15% 0.0299 156.08);
+			--color-background: oklch(97.02% 0.0015 156.08);
+			--color-foreground: oklch(21.03% 0.0059 156.08);
+			--color-surface: oklch(100.00% 0.0008 156.08);
+			--color-surface-foreground: oklch(21.03% 0.0059 156.08);
+			--color-overlay: oklch(100.00% 0.0004 156.08);
+			--color-overlay-foreground: oklch(21.03% 0.0059 156.08);
+			--color-muted: oklch(55.17% 0.0030 156.08);
+			--color-default: oklch(94.00% 0.0015 156.08);
+			--color-default-foreground: oklch(21.03% 0.0059 156.08);
+			--color-border: oklch(90.00% 0.0015 156.08);
+			--color-separator: oklch(92.00% 0.0015 156.08);
+			--color-focus: oklch(69.31% 0.1496 156.08);
+			--color-scrollbar: oklch(87.10% 0.0015 156.08);
+
+			/* Form Fields */
+			--color-field-background: oklch(100.00% 0.0008 156.08);
+			--color-field-foreground: oklch(21.03% 0.0059 156.08);
+			--color-field-placeholder: oklch(55.17% 0.0030 156.08);
+			--color-radius: 0.5rem;
+			--color-field-radius: 0.75rem;
+
+			/* Segment */
+			--color-segment: oklch(100.00% 0.0015 156.08);
+			--color-segment-foreground: oklch(21.03% 0.0059 156.08);
+
+			/* Status Colors */
+			--color-success: oklch(73.29% 0.1941 139.08);
+			--color-success-foreground: oklch(21.03% 0.0059 139.08);
+			--color-warning: oklch(78.19% 0.1590 60.60);
+			--color-warning-foreground: oklch(21.03% 0.0059 60.60);
+			--color-danger: oklch(65.32% 0.2335 14.01);
+			--color-danger-foreground: oklch(99.11% 0 0);
+
+		}
+
+		@variant dark {
+			/* HeroUI Semantic Colors */
+			--color-accent: oklch(69.31% 0.1496 156.08);
+			--color-accent-foreground: oklch(15% 0.0299 156.08);
+			--color-background: oklch(16.68% 0.003 145.46);
+			--color-foreground: oklch(99.11% 0.0000 0.00);
+			--color-surface: oklch(21.03% 0.0030 156.08);
+			--color-surface-foreground: oklch(99.11% 0.0000 0.00);
+			--color-overlay: oklch(21.03% 0.0030 156.08);
+			--color-overlay-foreground: oklch(99.11% 0.0000 0.00);
+			--color-muted: oklch(70.50% 0.0030 156.08);
+			--color-default: oklch(27.40% 0.0015 156.08);
+			--color-default-foreground: oklch(99.11% 0 0);
+			--color-border: oklch(28.00% 0.0015 156.08);
+			--color-separator: oklch(25.00% 0.0015 156.08);
+			--color-focus: oklch(69.31% 0.1496 156.08);
+			--color-scrollbar: oklch(70.50% 0.0015 156.08);
+
+			/* Form Fields */
+			--color-field-background: oklch(21.03% 0.0030 156.08);
+			--color-field-foreground: oklch(99.11% 0.0000 0.00);
+			--color-field-placeholder: oklch(70.50% 0.0030 156.08);
+			--color-radius: 0.5rem;
+			--color-field-radius: 0.75rem;
+
+			/* Segment */
+			--color-segment: oklch(39.64% 0.0015 156.08);
+			--color-segment-foreground: oklch(99.11% 0.0000 0.00);
+
+			/* Status Colors */
+			--color-success: oklch(73.29% 0.1941 139.08);
+			--color-success-foreground: oklch(21.03% 0.0059 139.08);
+			--color-warning: oklch(82.03% 0.1392 64.61);
+			--color-warning-foreground: oklch(21.03% 0.0059 64.61);
+			--color-danger: oklch(59.40% 0.1973 12.90);
+			--color-danger-foreground: oklch(99.11% 0 0);
+		}
+	}
+}
+
+@utility centered {
+	align-items: center;
+	justify-content: center;
+}

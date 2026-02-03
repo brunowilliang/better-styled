@@ -135,8 +135,10 @@ export function styled<T extends ElementType>(
 
 		const element = createElement(component, finalProps);
 
-		// If has context AND is root component (received variant props), wrap with Provider
-		if (context && hasVariantProps) {
+		// If has context AND is root component (received variant props OR has defaults), wrap with Provider
+		const hasDefaults =
+			defaultVariants && Object.keys(defaultVariants).length > 0;
+		if (context && (hasVariantProps || hasDefaults)) {
 			return createElement(
 				context.Provider,
 				{ value: activeVariants as never },
