@@ -18,7 +18,7 @@
 	"hooks": {
 		"before:init": ["cd packages/lib && bun run lint"],
 		"after:bump": "npm version ${version} --no-git-tag-version --allow-same-version --prefix packages/lib && cd packages/lib && bun run build",
-		"after:release": "cd packages/lib && npm publish --tag ${preReleaseId}"
+		"after:release": "cd packages/lib && if [ -z '${preReleaseId}' ]; then npm publish; else npm publish --tag ${preReleaseId}; fi"
 	},
 	"plugins": {
 		"@release-it/conventional-changelog": {

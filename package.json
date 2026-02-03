@@ -17,7 +17,7 @@
     "docs": "cd apps/docs && npx mintlify dev",
     "lint": "biome check ./packages/lib",
     "format": "biome format ./packages/lib --write",
-    "release": "release-it --preRelease=latest",
+    "release": "release-it",
     "release:beta": "release-it --preRelease=beta",
     "release:dry": "release-it --dry-run"
   },
