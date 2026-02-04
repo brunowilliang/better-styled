@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 
 
+## [1.2.0](https://github.com/brunowilliang/better-styled/compare/v1.1.0...v1.2.0) (2026-02-04)
+
+### Features
+
+* add unit tests and benchmarks for utility functions ([233336a](https://github.com/brunowilliang/better-styled/commit/233336a8887e3a5ef99ebff3f01928cdd0c23f4d))
+
+### Bug Fixes
+
+* improve type validation for variants with context ([6930df7](https://github.com/brunowilliang/better-styled/commit/6930df7e2499dd9be0875fc3b962e00fb292b7d9))
+
 ## [1.1.0](https://github.com/brunowilliang/better-styled/compare/v1.0.1...v1.1.0) (2026-02-04)
 
 ### Features
