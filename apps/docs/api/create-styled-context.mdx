@@ -171,6 +171,10 @@ No `as const` needed.
   Context values are provided when a parent component with `context` receives variant props **or** has `defaultVariants` defined. Children automatically inherit these values.
 </Note>
 
+<Note>
+  Only variants defined here will propagate to children. You can define additional **local variants** in `styled()` that stay on a single component. See [Local Variants](/concepts/context#local-variants).
+</Note>
+
 <Warning>
   Always define arrays inline in `createStyledContext()`. Assigning them to variables first can break type inference.
 

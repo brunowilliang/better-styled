@@ -25,6 +25,16 @@ export type VariantsConfigFromInput<
 };
 
 /**
+ * Config for local variants (not propagated via context)
+ * These variants exist only on the component that defines them
+ */
+export type LocalVariantsConfig<T extends ElementType> = {
+	[variantName: string]: {
+		[value: string]: VariantProps<T>;
+	};
+};
+
+/**
  * Default variants type based on the original input arrays
  * For ["boolean"]: boolean
  * For string arrays: union of values
@@ -38,26 +48,34 @@ export type DefaultVariantsFromInput<Input extends StyledContextInput> = {
 /**
  * Props for styled component with context
  * Explicitly includes children to ensure it's always available
+ * LocalV allows additional variants that are not propagated via context
  */
 export type StyledPropsWithContext<
 	T extends ElementType,
 	CV extends Record<string, unknown>,
-> = Omit<ComponentProps<T>, keyof CV> & Partial<CV> & { children?: ReactNode };
+	LocalV extends LocalVariantsConfig<T> = Record<string, never>,
+> = Omit<ComponentProps<T>, keyof CV | ExtractVariantKeys<LocalV>> &
+	Partial<CV> &
+	InferVariantProps<LocalV> & { children?: ReactNode };
 
 /**
  * Config type that requires context
  * Uses the Input generic directly to preserve exact types
+ * LocalV allows additional variants that are not propagated via context
  */
 export type ConfigWithContext<
 	T extends ElementType,
 	Input extends StyledContextInput,
+	LocalV extends LocalVariantsConfig<T> = Record<string, never>,
 > = {
 	context: StyledContext<Input>;
 	base?: VariantProps<T>;
-	variants?: VariantsConfigFromInput<T, Input>;
-	defaultVariants?: DefaultVariantsFromInput<Input>;
+	variants?: VariantsConfigFromInput<T, Input> & LocalV;
+	defaultVariants?: DefaultVariantsFromInput<Input> &
+		InferDefaultVariants<LocalV>;
 	compoundVariants?: Array<
-		Partial<InferContextValue<Input>> & { props: VariantProps<T> }
+		Partial<InferContextValue<Input>> &
+			Partial<InferVariantProps<LocalV>> & { props: VariantProps<T> }
 	>;
 };
 
@@ -175,8 +193,9 @@ export type StyledPropsWithoutContext<
 export type StyledComponentWithContext<
 	T extends ElementType,
 	Input extends StyledContextInput,
+	LocalV extends LocalVariantsConfig<T> = Record<string, never>,
 > = ((
-	props: StyledPropsWithContext<T, InferContextValue<Input>>,
+	props: StyledPropsWithContext<T, InferContextValue<Input>, LocalV>,
 ) => ReactNode) & {
 	displayName?: string;
 };

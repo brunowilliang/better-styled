@@ -13,6 +13,7 @@ import type { VariantProps } from "./types/shared";
 import type {
 	ConfigWithContext,
 	ConfigWithoutContext,
+	LocalVariantsConfig,
 	StyledPropsWithContext,
 	StyledPropsWithoutContext,
 	VariantsConfig,
@@ -34,15 +35,18 @@ import {
  * The key trick here is using `Input extends StyledContextInput` as the
  * primary generic, and inferring it from `config.context.variantKeys`.
  * This allows TypeScript to preserve the exact literal types.
+ *
+ * LocalV allows additional variants that are not propagated via context.
  */
 export function styled<
 	T extends ElementType,
 	const Input extends StyledContextInput,
+	const LocalV extends LocalVariantsConfig<T> = Record<string, never>,
 >(
 	component: T,
-	config: ConfigWithContext<T, Input>,
+	config: ConfigWithContext<T, Input, LocalV>,
 ): ((
-	props: StyledPropsWithContext<T, InferContextValue<Input>>,
+	props: StyledPropsWithContext<T, InferContextValue<Input>, LocalV>,
 ) => ReactNode) & {
 	displayName?: string;
 };
@@ -139,9 +143,19 @@ export function styled<T extends ElementType>(
 		const hasDefaults =
 			defaultVariants && Object.keys(defaultVariants).length > 0;
 		if (context && (hasVariantProps || hasDefaults)) {
+			// Only propagate variants that are defined in the context
+			const contextVariantKeys = new Set(Object.keys(context.variantKeys));
+			const propagatedVariants: Record<string, string | boolean> = {};
+
+			for (const [key, value] of Object.entries(activeVariants)) {
+				if (contextVariantKeys.has(key)) {
+					propagatedVariants[key] = value;
+				}
+			}
+
 			return createElement(
 				context.Provider,
-				{ value: activeVariants as never },
+				{ value: propagatedVariants as never },
 				element,
 			);
 		}

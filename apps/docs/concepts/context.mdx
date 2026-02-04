@@ -75,7 +75,7 @@ const ButtonRoot = styled("button", {
 // Child component - inherits from context
 const ButtonIcon = styled("span", {
   context: ButtonContext,
-  base: { className: "flex-shrink-0" },
+  base: { className: "shrink-0" },
   variants: {
     size: {
       sm: { className: "w-4 h-4" },
@@ -248,6 +248,111 @@ const ButtonLabel = styled("span", {
   <Button.Label />           {/* Gets size="lg" from context */}
   <Button.Label size="sm" /> {/* Gets size="sm" from direct prop */}
 </Button>
+```
+
+## Local Variants
+
+Not all variants need to propagate to children. Some behaviors are specific to a single component—like haptic feedback on a Button root, but not on its Text or Icon slots.
+
+### The Problem
+
+Imagine you want your Button to have haptic feedback options, but this only makes sense for the Pressable root:
+
+```tsx
+// ❌ This doesn't make sense
+<Button haptics="heavy">
+  <Button.Text haptics="heavy" />  {/* Text shouldn't have haptics */}
+  <Button.Icon haptics="heavy" />  {/* Icon shouldn't have haptics */}
+</Button>
+```
+
+### The Solution
+
+Define variants **outside** of `createStyledContext()` to keep them local:
+
+```tsx
+import { Pressable, Text } from "react-native";
+import * as Haptics from "expo-haptics";
+
+// Only "variant" propagates to children
+const ButtonContext = createStyledContext({
+  variant: ["solid", "bordered", "ghost"],
+});
+
+// Haptics is NOT in the context - it's local only
+const haptics = {
+  soft: { onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft) },
+  light: { onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) },
+  heavy: { onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) },
+};
+
+const ButtonRoot = styled(Pressable, {
+  context: ButtonContext,
+  base: { className: "flex-row items-center justify-center rounded-lg" },
+  variants: {
+    variant: {
+      solid: { className: "bg-blue-600" },
+      bordered: { className: "border-2 border-blue-600" },
+      ghost: { className: "bg-transparent" },
+    },
+    haptics,  // ← Local variant, not in context
+  },
+  defaultVariants: {
+    variant: "solid",
+    haptics: "heavy",  // ← Has a default, but won't propagate
+  },
+});
+
+const ButtonText = styled(Text, {
+  context: ButtonContext,
+  base: { className: "font-semibold" },
+  variants: {
+    variant: {  // ← Only "variant" is available here
+      solid: { className: "text-white" },
+      bordered: { className: "text-blue-600" },
+      ghost: { className: "text-blue-600" },
+    },
+    // No haptics here - ButtonText doesn't know about it
+  },
+});
+```
+
+### How It Works
+
+1. **Context variants** (`variant`) - Defined in `createStyledContext()`, propagate to all children with the same context
+2. **Local variants** (`haptics`) - Defined only in `variants`, stay on that component
+
+```tsx
+<Button variant="solid" haptics="light">
+  <Button.Text>Click me</Button.Text>
+</Button>
+
+// ButtonRoot: variant="solid", haptics="light" ✓
+// ButtonText: variant="solid" (inherited), haptics=undefined (local to root)
+```
+
+### When to Use Local Variants
+
+✅ **Use local variants for:**
+- Platform-specific behaviors (haptics, animations)
+- Root-only interactions (press effects, gestures)
+- Variants that don't make semantic sense on children
+
+❌ **Use context variants for:**
+- Visual consistency (size, color, variant)
+- Semantic states (disabled, loading)
+- Anything children should know about
+
+### Function Composition
+
+Local variants work great with function props. When you define `onPress` in a variant, it composes with any `onPress` passed to the component:
+
+```tsx
+// Both haptics AND your custom handler execute
+<Button haptics="heavy" onPress={() => console.log("clicked")}>
+  Submit
+</Button>
+// → Haptics fire, then "clicked" logs
 ```
 
 ## Nested Contexts

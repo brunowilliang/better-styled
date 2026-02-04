@@ -1,209 +1,112 @@
 import { createStyledContext, styled, withSlots } from "better-styled";
-import { Pressable, Text } from "react-native";
-import Animated from "react-native-reanimated";
-import { withUniwind } from "uniwind";
+import type { ReactNode } from "react";
+import {
+	ActivityIndicator,
+	Pressable,
+	type PressableProps,
+} from "react-native";
+import { haptics } from "./haptics";
+import { Text } from "./Text";
 
-export const TextBase = styled(Text, {
-	base: {
-		className: "text-foreground font-normal",
-		allowFontScaling: false,
-		adjustsFontSizeToFit: false,
-		maxFontSizeMultiplier: 1.5,
-		minimumFontScale: 0.5,
-	},
-	variants: {
-		variant: {
-			display: { className: "text-4xl font-bold tracking-tight" },
-			heading: { className: "text-2xl font-semibold" },
-			title: { className: "text-xl font-semibold" },
-			body: { className: "text-base" },
-			caption: { className: "text-sm" },
-			label: { className: "text-xs font-medium uppercase tracking-wide" },
-		},
-		size: {
-			xs: { className: "text-xs" },
-			sm: { className: "text-sm" },
-			base: { className: "text-base" },
-			lg: { className: "text-lg" },
-			xl: { className: "text-xl" },
-			"2xl": { className: "text-2xl" },
-			"3xl": { className: "text-3xl" },
-			"4xl": { className: "text-4xl" },
-		},
-		weight: {
-			light: { className: "font-light" },
-			normal: { className: "font-normal" },
-			medium: { className: "font-medium" },
-			semibold: { className: "font-semibold" },
-			bold: { className: "font-bold" },
-		},
-		color: {
-			foreground: { className: "text-foreground" },
-			muted: { className: "text-muted" },
-			accent: { className: "text-accent" },
-			success: { className: "text-success" },
-			warning: { className: "text-warning" },
-			danger: { className: "text-danger" },
-		},
-	},
-	defaultVariants: {
-		variant: "body",
-		color: "foreground",
-	},
-});
-
-export const TextBaseAnimated = styled(withUniwind(Animated.Text), {
-	base: {
-		className: "text-foreground font-normal",
-		allowFontScaling: false,
-		adjustsFontSizeToFit: false,
-		maxFontSizeMultiplier: 1.5,
-		minimumFontScale: 0.5,
-	},
-	variants: {
-		variant: {
-			display: { className: "text-4xl font-bold tracking-tight" },
-			heading: { className: "text-2xl font-semibold" },
-			title: { className: "text-xl font-semibold" },
-			body: { className: "text-base" },
-			caption: { className: "text-sm" },
-			label: { className: "text-xs font-medium uppercase tracking-wide" },
-		},
-		size: {
-			xs: { className: "text-xs" },
-			sm: { className: "text-sm" },
-			base: { className: "text-base" },
-			lg: { className: "text-lg" },
-			xl: { className: "text-xl" },
-			"2xl": { className: "text-2xl" },
-			"3xl": { className: "text-3xl" },
-			"4xl": { className: "text-4xl" },
-		},
-		weight: {
-			light: { className: "font-light" },
-			normal: { className: "font-normal" },
-			medium: { className: "font-medium" },
-			semibold: { className: "font-semibold" },
-			bold: { className: "font-bold" },
-		},
-		color: {
-			foreground: { className: "text-foreground" },
-			muted: { className: "text-muted" },
-			accent: { className: "text-accent" },
-			success: { className: "text-success" },
-			warning: { className: "text-warning" },
-			danger: { className: "text-danger" },
-		},
-	},
-	defaultVariants: {
-		variant: "body",
-		color: "foreground",
-	},
-});
-
-const ButtonCtx = createStyledContext({
+const ButtonContext = createStyledContext({
 	variant: [
-		"primary",
-		"secondary",
-		"tertiary",
-		"ghost",
+		"solid",
+		"bordered",
+		"danger-bordered",
 		"danger",
-		"danger-soft",
+		"light",
+		"flat",
+		"link",
 	],
-	size: ["sm", "md", "lg"],
-	isIconOnly: ["boolean"],
-	isDisabled: ["boolean"],
 });
 
-const ButtonRoot = styled(Pressable, {
-	context: ButtonCtx,
-	base: {
-		className: "flex-row centered",
-	},
-	variants: {
-		variant: {
-			primary: { className: "bg-accent" },
-			secondary: { className: "bg-default" },
-			tertiary: { className: "bg-default" },
-			ghost: { className: "bg-transparent" },
-			danger: { className: "bg-danger" },
-			"danger-soft": { className: "bg-danger/20" },
-		},
-		size: {
-			sm: { className: "h-9 px-3.5 gap-1 rounded-2xl" },
-			md: { className: "h-12 px-4 gap-1.5 rounded-3xl" },
-			lg: { className: "h-14 gap-1.5 rounded-4xl px-5" },
-		},
-		isIconOnly: {
-			true: { className: "p-0 aspect-square" },
-		},
-		isDisabled: {
-			true: { className: "opacity-disabled pointer-events-none" },
-		},
-	},
-	defaultVariants: {
-		variant: "primary",
-		size: "md",
-	},
-});
+type ButtonRootProps = PressableProps & {
+	isLoading?: boolean;
+	children?: ReactNode;
+};
 
-const ButtonLabelRoot = styled(TextBase, {
-	context: ButtonCtx,
-	base: {
-		className: "font-semibold",
-	},
-	variants: {
-		variant: {
-			primary: { className: "text-accent-foreground" },
-			secondary: { className: "text-accent" },
-			tertiary: { className: "text-default-foreground" },
-			ghost: { className: "text-default-foreground" },
-			danger: { className: "text-danger-foreground" },
-			"danger-soft": { className: "text-danger" },
-		},
-		size: {
-			sm: { className: "text-sm" },
-			md: { className: "text-base" },
-			lg: { className: "text-lg" },
-		},
-	},
-});
-
-export const Button = withSlots(ButtonRoot, {
-	Label: ButtonLabelRoot,
-	Text: withSlots(TextBase, {
-		Animated: TextBaseAnimated,
-	}),
-});
-
-// exemplo de uso
-export const Exemple = () => {
-	const variants = [
-		"primary",
-		"secondary",
-		"tertiary",
-		"ghost",
-		"danger",
-		"danger-soft",
-	] as const;
-
+const ButtonRootComponent = (props: ButtonRootProps) => {
 	return (
-		<>
-			{/* exemplo 1 */}
-			{variants.map((variant) => (
-				<Button key={variant} variant={variant}>
-					<Button.Label>{variant}</Button.Label>
-					<Button.Text>{variant}</Button.Text>
-					<Button.Text.Animated>{variant}</Button.Text.Animated>
-				</Button>
-			))}
-
-			{/* exemplo 2 */}
-			<Button>
-				<Button.Label>Hello</Button.Label>
-				<Button.Text>Hello</Button.Text>
-				<Button.Text.Animated>Hello</Button.Text.Animated>
-			</Button>
-		</>
+		<Pressable {...props} disabled={props.isLoading || props.disabled}>
+			{props.children}
+			{props.isLoading && <ButtonIndicator />}
+		</Pressable>
 	);
 };
+
+const ButtonRoot = styled(ButtonRootComponent, {
+	context: ButtonContext,
+	base: {
+		className:
+			"centered h-16 w-full flex-row gap-2 rounded-2xl transition-all duration-300 active:scale-[0.98] active:opacity-60 disabled:opacity-50",
+	},
+	variants: {
+		haptics,
+		variant: {
+			solid: { className: "bg-primary" },
+			bordered: { className: "border-2 border-primary bg-transparent" },
+			"danger-bordered": {
+				className: "border-2 border-danger bg-transparent",
+			},
+			danger: { className: "bg-transparent" },
+			light: { className: "bg-transparent" },
+			flat: { className: "bg-primary/20" },
+			link: { className: "h-auto bg-transparent" },
+		},
+	},
+	defaultVariants: {
+		variant: "flat",
+		haptics: "heavy",
+	},
+});
+
+const ButtonIndicator = styled(ActivityIndicator, {
+	context: ButtonContext,
+	variants: {
+		variant: {
+			solid: { className: "text-surface" },
+			bordered: { className: "text-primary" },
+			"danger-bordered": { className: "text-danger" },
+			danger: { className: "text-danger" },
+			light: { className: "text-primary" },
+			flat: { className: "text-primary" },
+			link: { className: "text-primary" },
+		},
+	},
+});
+
+const ButtonText = styled(Text, {
+	context: ButtonContext,
+	base: { variant: "display" },
+	variants: {
+		variant: {
+			solid: { className: "text-surface" },
+			bordered: { className: "text-primary" },
+			"danger-bordered": { className: "text-danger" },
+			danger: { className: "text-danger" },
+			light: { className: "text-primary" },
+			flat: { className: "text-primary" },
+			link: { className: "font-idonate-semibold text-primary" },
+		},
+	},
+});
+
+// const ButtonIcon = styled(Icon, {
+// 	context: ButtonContext,
+// 	variants: {
+// 		variant: {
+// 			solid: { className: "text-surface" },
+// 			bordered: { className: "text-primary" },
+// 			"danger-bordered": { className: "text-danger" },
+// 			danger: { className: "text-danger" },
+// 			light: { className: "text-primary" },
+// 			flat: { className: "text-primary" },
+// 			link: { className: "text-primary" },
+// 		},
+// 	},
+// });
+
+export const Button = withSlots(ButtonRoot, {
+	Text: ButtonText,
+	// Icon: ButtonIcon,
+});

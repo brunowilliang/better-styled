@@ -1206,4 +1206,684 @@ describe("createStyledContext", () => {
 			}
 		});
 	});
+
+	describe("local variants (non-propagated)", () => {
+		describe("basic functionality", () => {
+			it("should apply local variant to the component that defines it", () => {
+				const ButtonContext = createStyledContext({
+					variant: ["primary", "secondary"],
+				});
+
+				const Button = styled("button", {
+					context: ButtonContext,
+					base: { className: "btn" },
+					variants: {
+						variant: {
+							primary: { className: "btn-primary" },
+							secondary: { className: "btn-secondary" },
+						},
+						// Local variant - not in context
+						fullWidth: {
+							true: { className: "w-full" },
+							false: { className: "w-auto" },
+						},
+					},
+					defaultVariants: {
+						variant: "primary",
+						fullWidth: false,
+					},
+				});
+
+				render(<Button data-testid="button" fullWidth={true} />);
+
+				const button = screen.getByTestId("button");
+				expect(button).toHaveClass("btn", "btn-primary", "w-full");
+			});
+
+			it("should handle multiple local variant values", () => {
+				const CardContext = createStyledContext({
+					size: ["sm", "md", "lg"],
+				});
+
+				const Card = styled("div", {
+					context: CardContext,
+					base: { className: "card" },
+					variants: {
+						size: {
+							sm: { className: "card-sm" },
+							md: { className: "card-md" },
+							lg: { className: "card-lg" },
+						},
+						// Local variant with multiple values
+						shadow: {
+							none: { className: "shadow-none" },
+							sm: { className: "shadow-sm" },
+							md: { className: "shadow-md" },
+							lg: { className: "shadow-lg" },
+						},
+					},
+					defaultVariants: {
+						size: "md",
+						shadow: "none",
+					},
+				});
+
+				const { rerender } = render(<Card data-testid="card" shadow="sm" />);
+				expect(screen.getByTestId("card")).toHaveClass("card", "card-md", "shadow-sm");
+
+				rerender(<Card data-testid="card" shadow="lg" />);
+				expect(screen.getByTestId("card")).toHaveClass("card", "card-md", "shadow-lg");
+			});
+
+			it("should handle boolean local variants", () => {
+				const ButtonContext = createStyledContext({
+					variant: ["primary", "secondary"],
+				});
+
+				const Button = styled("button", {
+					context: ButtonContext,
+					base: { className: "btn" },
+					variants: {
+						variant: {
+							primary: { className: "btn-primary" },
+							secondary: { className: "btn-secondary" },
+						},
+						// Boolean local variant
+						isRounded: {
+							true: { className: "rounded-full" },
+							false: { className: "rounded-none" },
+						},
+					},
+					defaultVariants: {
+						variant: "primary",
+						isRounded: false,
+					},
+				});
+
+				render(<Button data-testid="button" isRounded={true} />);
+				expect(screen.getByTestId("button")).toHaveClass("btn", "btn-primary", "rounded-full");
+			});
+		});
+
+		describe("context isolation (non-propagation)", () => {
+			it("should NOT propagate local variants to child components via context", () => {
+				const ButtonContext = createStyledContext({
+					variant: ["solid", "bordered"],
+					size: ["sm", "md", "lg"],
+				});
+
+				const ButtonRoot = styled("button", {
+					context: ButtonContext,
+					base: { className: "btn" },
+					variants: {
+						variant: {
+							solid: { className: "btn-solid" },
+							bordered: { className: "btn-bordered" },
+						},
+						size: {
+							sm: { className: "btn-sm" },
+							md: { className: "btn-md" },
+							lg: { className: "btn-lg" },
+						},
+						// LOCAL VARIANT - not in context
+						haptics: {
+							soft: { className: "haptics-soft" },
+							heavy: { className: "haptics-heavy" },
+						},
+					},
+					defaultVariants: {
+						variant: "solid",
+						size: "md",
+						haptics: "soft",
+					},
+				});
+
+				const ButtonText = styled("span", {
+					context: ButtonContext,
+					base: { className: "btn-text" },
+					variants: {
+						variant: {
+							solid: { className: "text-solid" },
+							bordered: { className: "text-bordered" },
+						},
+						size: {
+							sm: { className: "text-sm" },
+							md: { className: "text-md" },
+							lg: { className: "text-lg" },
+						},
+					},
+				});
+
+				render(
+					<ButtonRoot data-testid="button" variant="solid" size="lg" haptics="heavy">
+						<ButtonText data-testid="text">Click me</ButtonText>
+					</ButtonRoot>,
+				);
+
+				const button = screen.getByTestId("button");
+				const text = screen.getByTestId("text");
+
+				// ButtonRoot should have ALL variants including local
+				expect(button).toHaveClass("btn", "btn-solid", "btn-lg", "haptics-heavy");
+
+				// ButtonText should have context variants but NOT haptics
+				expect(text).toHaveClass("btn-text", "text-solid", "text-lg");
+				expect(text).not.toHaveClass("haptics-heavy");
+				expect(text).not.toHaveClass("haptics-soft");
+			});
+
+			it("should propagate context variants while keeping local variants isolated", () => {
+				const CardContext = createStyledContext({
+					variant: ["elevated", "outlined"],
+				});
+
+				const Card = styled("div", {
+					context: CardContext,
+					base: { className: "card" },
+					variants: {
+						variant: {
+							elevated: { className: "card-elevated" },
+							outlined: { className: "card-outlined" },
+						},
+						// Local only
+						padding: {
+							none: { className: "p-0" },
+							md: { className: "p-4" },
+							lg: { className: "p-8" },
+						},
+					},
+					defaultVariants: {
+						variant: "elevated",
+						padding: "md",
+					},
+				});
+
+				const CardTitle = styled("h2", {
+					context: CardContext,
+					base: { className: "card-title" },
+					variants: {
+						variant: {
+							elevated: { className: "title-elevated" },
+							outlined: { className: "title-outlined" },
+						},
+					},
+				});
+
+				render(
+					<Card data-testid="card" variant="outlined" padding="lg">
+						<CardTitle data-testid="title">Title</CardTitle>
+					</Card>,
+				);
+
+				const card = screen.getByTestId("card");
+				const title = screen.getByTestId("title");
+
+				// Card has both context and local variants
+				expect(card).toHaveClass("card", "card-outlined", "p-8");
+
+				// Title has context variant only
+				expect(title).toHaveClass("card-title", "title-outlined");
+				expect(title).not.toHaveClass("p-8");
+				expect(title).not.toHaveClass("p-4");
+				expect(title).not.toHaveClass("p-0");
+			});
+
+			it("should not leak local variants to deeply nested children", () => {
+				const ListContext = createStyledContext({
+					size: ["sm", "md", "lg"],
+				});
+
+				const List = styled("ul", {
+					context: ListContext,
+					base: { className: "list" },
+					variants: {
+						size: {
+							sm: { className: "list-sm" },
+							md: { className: "list-md" },
+							lg: { className: "list-lg" },
+						},
+						// Local variant
+						spacing: {
+							tight: { className: "gap-1" },
+							normal: { className: "gap-2" },
+							loose: { className: "gap-4" },
+						},
+					},
+					defaultVariants: {
+						size: "md",
+						spacing: "normal",
+					},
+				});
+
+				const ListItem = styled("li", {
+					context: ListContext,
+					base: { className: "list-item" },
+					variants: {
+						size: {
+							sm: { className: "item-sm" },
+							md: { className: "item-md" },
+							lg: { className: "item-lg" },
+						},
+					},
+				});
+
+				const ListItemText = styled("span", {
+					context: ListContext,
+					base: { className: "item-text" },
+					variants: {
+						size: {
+							sm: { className: "text-sm" },
+							md: { className: "text-md" },
+							lg: { className: "text-lg" },
+						},
+					},
+				});
+
+				render(
+					<List data-testid="list" size="lg" spacing="loose">
+						<ListItem data-testid="item">
+							<ListItemText data-testid="text">Item 1</ListItemText>
+						</ListItem>
+					</List>,
+				);
+
+				const list = screen.getByTestId("list");
+				const item = screen.getByTestId("item");
+				const text = screen.getByTestId("text");
+
+				// List has local spacing
+				expect(list).toHaveClass("list", "list-lg", "gap-4");
+
+				// Nested children don't have spacing
+				expect(item).toHaveClass("list-item", "item-lg");
+				expect(item).not.toHaveClass("gap-4");
+				expect(item).not.toHaveClass("gap-2");
+
+				expect(text).toHaveClass("item-text", "text-lg");
+				expect(text).not.toHaveClass("gap-4");
+			});
+		});
+
+		describe("defaultVariants with local variants", () => {
+			it("should accept local variants in defaultVariants", () => {
+				const InputContext = createStyledContext({
+					size: ["sm", "md", "lg"],
+				});
+
+				const Input = styled("input", {
+					context: InputContext,
+					base: { className: "input" },
+					variants: {
+						size: {
+							sm: { className: "input-sm" },
+							md: { className: "input-md" },
+							lg: { className: "input-lg" },
+						},
+						// Local variant with default
+						bordered: {
+							true: { className: "border" },
+							false: { className: "border-none" },
+						},
+					},
+					defaultVariants: {
+						size: "md",
+						bordered: true,
+					},
+				});
+
+				render(<Input data-testid="input" />);
+				expect(screen.getByTestId("input")).toHaveClass("input", "input-md", "border");
+			});
+
+			it("should apply local variant default without explicit prop", () => {
+				const BadgeContext = createStyledContext({
+					variant: ["info", "success", "warning"],
+				});
+
+				const Badge = styled("span", {
+					context: BadgeContext,
+					base: { className: "badge" },
+					variants: {
+						variant: {
+							info: { className: "badge-info" },
+							success: { className: "badge-success" },
+							warning: { className: "badge-warning" },
+						},
+						// Local with default
+						pill: {
+							true: { className: "rounded-full" },
+							false: { className: "rounded" },
+						},
+					},
+					defaultVariants: {
+						variant: "info",
+						pill: true,
+					},
+				});
+
+				// No props - should use defaults
+				render(<Badge data-testid="badge" />);
+				expect(screen.getByTestId("badge")).toHaveClass("badge", "badge-info", "rounded-full");
+			});
+
+			it("should NOT propagate local variant defaults to children", () => {
+				const AlertContext = createStyledContext({
+					severity: ["info", "error", "warning"],
+				});
+
+				const Alert = styled("div", {
+					context: AlertContext,
+					base: { className: "alert" },
+					variants: {
+						severity: {
+							info: { className: "alert-info" },
+							error: { className: "alert-error" },
+							warning: { className: "alert-warning" },
+						},
+						// Local default
+						dismissible: {
+							true: { className: "has-dismiss" },
+							false: { className: "no-dismiss" },
+						},
+					},
+					defaultVariants: {
+						severity: "info",
+						dismissible: true,
+					},
+				});
+
+				const AlertIcon = styled("span", {
+					context: AlertContext,
+					base: { className: "alert-icon" },
+					variants: {
+						severity: {
+							info: { className: "icon-info" },
+							error: { className: "icon-error" },
+							warning: { className: "icon-warning" },
+						},
+					},
+				});
+
+				// No props - uses all defaults
+				render(
+					<Alert data-testid="alert">
+						<AlertIcon data-testid="icon" />
+					</Alert>,
+				);
+
+				const alert = screen.getByTestId("alert");
+				const icon = screen.getByTestId("icon");
+
+				// Alert has default local variant
+				expect(alert).toHaveClass("alert", "alert-info", "has-dismiss");
+
+				// Icon does NOT have local variant
+				expect(icon).toHaveClass("alert-icon", "icon-info");
+				expect(icon).not.toHaveClass("has-dismiss");
+				expect(icon).not.toHaveClass("no-dismiss");
+			});
+		});
+
+		describe("props handling", () => {
+			it("should accept local variant as component prop", () => {
+				const ChipContext = createStyledContext({
+					color: ["default", "primary", "secondary"],
+				});
+
+				const Chip = styled("span", {
+					context: ChipContext,
+					base: { className: "chip" },
+					variants: {
+						color: {
+							default: { className: "chip-default" },
+							primary: { className: "chip-primary" },
+							secondary: { className: "chip-secondary" },
+						},
+						// Local
+						clickable: {
+							true: { className: "cursor-pointer" },
+							false: { className: "cursor-default" },
+						},
+					},
+					defaultVariants: {
+						color: "default",
+						clickable: false,
+					},
+				});
+
+				render(<Chip data-testid="chip" clickable={true} />);
+				expect(screen.getByTestId("chip")).toHaveClass("chip", "chip-default", "cursor-pointer");
+			});
+
+			it("should override local variant default with explicit prop", () => {
+				const TagContext = createStyledContext({
+					size: ["sm", "md"],
+				});
+
+				const Tag = styled("span", {
+					context: TagContext,
+					base: { className: "tag" },
+					variants: {
+						size: {
+							sm: { className: "tag-sm" },
+							md: { className: "tag-md" },
+						},
+						// Local with default
+						outlined: {
+							true: { className: "border" },
+							false: { className: "bg-filled" },
+						},
+					},
+					defaultVariants: {
+						size: "sm",
+						outlined: true, // default is outlined
+					},
+				});
+
+				// Override with explicit prop
+				render(<Tag data-testid="tag" outlined={false} />);
+				expect(screen.getByTestId("tag")).toHaveClass("tag", "tag-sm", "bg-filled");
+				expect(screen.getByTestId("tag")).not.toHaveClass("border");
+			});
+
+			it("should not pass local variant prop to DOM element", () => {
+				const ButtonContext = createStyledContext({
+					variant: ["primary"],
+				});
+
+				const Button = styled("button", {
+					context: ButtonContext,
+					base: { className: "btn" },
+					variants: {
+						variant: {
+							primary: { className: "btn-primary" },
+						},
+						haptics: {
+							soft: { className: "haptics-soft" },
+						},
+					},
+					defaultVariants: {
+						variant: "primary",
+						haptics: "soft",
+					},
+				});
+
+				render(<Button data-testid="button" haptics="soft" />);
+				const button = screen.getByTestId("button");
+
+				// Should have the class
+				expect(button).toHaveClass("haptics-soft");
+
+				// Should NOT have haptics as DOM attribute
+				expect(button).not.toHaveAttribute("haptics");
+			});
+		});
+
+		describe("compound variants with local variants", () => {
+			it("should apply compound variant matching local + context variants", () => {
+				const ButtonContext = createStyledContext({
+					variant: ["primary", "secondary"],
+				});
+
+				const Button = styled("button", {
+					context: ButtonContext,
+					base: { className: "btn" },
+					variants: {
+						variant: {
+							primary: { className: "btn-primary" },
+							secondary: { className: "btn-secondary" },
+						},
+						// Local
+						size: {
+							sm: { className: "btn-sm" },
+							lg: { className: "btn-lg" },
+						},
+					},
+					defaultVariants: {
+						variant: "primary",
+						size: "sm",
+					},
+					compoundVariants: [
+						{
+							variant: "primary",
+							size: "lg",
+							props: { className: "special-primary-lg" },
+						},
+					],
+				});
+
+				render(<Button data-testid="button" variant="primary" size="lg" />);
+				expect(screen.getByTestId("button")).toHaveClass(
+					"btn",
+					"btn-primary",
+					"btn-lg",
+					"special-primary-lg",
+				);
+			});
+
+			it("should not apply compound when local variant does not match", () => {
+				const CardContext = createStyledContext({
+					variant: ["elevated", "flat"],
+				});
+
+				const Card = styled("div", {
+					context: CardContext,
+					base: { className: "card" },
+					variants: {
+						variant: {
+							elevated: { className: "card-elevated" },
+							flat: { className: "card-flat" },
+						},
+						// Local
+						rounded: {
+							true: { className: "rounded-lg" },
+							false: { className: "rounded-none" },
+						},
+					},
+					defaultVariants: {
+						variant: "elevated",
+						rounded: false,
+					},
+					compoundVariants: [
+						{
+							variant: "elevated",
+							rounded: true,
+							props: { className: "shadow-xl" },
+						},
+					],
+				});
+
+				// rounded=false, so compound should NOT apply
+				render(<Card data-testid="card" variant="elevated" rounded={false} />);
+				expect(screen.getByTestId("card")).toHaveClass("card", "card-elevated", "rounded-none");
+				expect(screen.getByTestId("card")).not.toHaveClass("shadow-xl");
+			});
+		});
+
+		describe("edge cases", () => {
+			it("should work with component having only local variants (no context variants defined)", () => {
+				const EmptyContext = createStyledContext({
+					theme: ["light", "dark"],
+				});
+
+				// Component only defines local variants, not the context ones
+				const Box = styled("div", {
+					context: EmptyContext,
+					base: { className: "box" },
+					variants: {
+						// Only local variants, not theme
+						padding: {
+							sm: { className: "p-2" },
+							lg: { className: "p-6" },
+						},
+						margin: {
+							sm: { className: "m-2" },
+							lg: { className: "m-6" },
+						},
+					},
+					defaultVariants: {
+						padding: "sm",
+						margin: "sm",
+					},
+				});
+
+				render(<Box data-testid="box" padding="lg" margin="lg" />);
+				expect(screen.getByTestId("box")).toHaveClass("box", "p-6", "m-6");
+			});
+
+			it("should handle multiple local variants simultaneously", () => {
+				const ButtonContext = createStyledContext({
+					variant: ["primary", "secondary"],
+				});
+
+				const Button = styled("button", {
+					context: ButtonContext,
+					base: { className: "btn" },
+					variants: {
+						variant: {
+							primary: { className: "btn-primary" },
+							secondary: { className: "btn-secondary" },
+						},
+						// Multiple local variants
+						fullWidth: {
+							true: { className: "w-full" },
+							false: { className: "w-auto" },
+						},
+						rounded: {
+							none: { className: "rounded-none" },
+							sm: { className: "rounded-sm" },
+							full: { className: "rounded-full" },
+						},
+						elevated: {
+							true: { className: "shadow-lg" },
+							false: { className: "shadow-none" },
+						},
+					},
+					defaultVariants: {
+						variant: "primary",
+						fullWidth: false,
+						rounded: "sm",
+						elevated: false,
+					},
+				});
+
+				render(
+					<Button
+						data-testid="button"
+						fullWidth={true}
+						rounded="full"
+						elevated={true}
+					/>,
+				);
+
+				expect(screen.getByTestId("button")).toHaveClass(
+					"btn",
+					"btn-primary",
+					"w-full",
+					"rounded-full",
+					"shadow-lg",
+				);
+			});
+		});
+	});
 });

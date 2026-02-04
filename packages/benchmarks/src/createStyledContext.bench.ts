@@ -512,6 +512,196 @@ group("defaultVariants Propagation - Parent to Child", () => {
 });
 
 // =============================================================================
+// Benchmarks: Local Variants (Non-Propagated)
+// =============================================================================
+
+// Context for local variants testing
+const LocalTestContext = createStyledContext({
+	variant: ["primary", "secondary"],
+	size: ["sm", "md", "lg"],
+	disabled: ["boolean"],
+});
+
+// Baseline: All variants in context (no local variants)
+const ButtonAllContext = styled("button", {
+	context: LocalTestContext,
+	base: { className: "btn" },
+	variants: {
+		variant: {
+			primary: { className: "btn-primary" },
+			secondary: { className: "btn-secondary" },
+		},
+		size: {
+			sm: { className: "btn-sm" },
+			md: { className: "btn-md" },
+			lg: { className: "btn-lg" },
+		},
+		disabled: {
+			true: { className: "btn-disabled" },
+			false: { className: "btn-enabled" },
+		},
+	},
+	defaultVariants: {
+		variant: "primary",
+		size: "md",
+		disabled: false,
+	},
+});
+
+// With 1 local variant
+const ButtonWith1Local = styled("button", {
+	context: LocalTestContext,
+	base: { className: "btn" },
+	variants: {
+		variant: {
+			primary: { className: "btn-primary" },
+			secondary: { className: "btn-secondary" },
+		},
+		size: {
+			sm: { className: "btn-sm" },
+			md: { className: "btn-md" },
+			lg: { className: "btn-lg" },
+		},
+		disabled: {
+			true: { className: "btn-disabled" },
+			false: { className: "btn-enabled" },
+		},
+		// Local variant (not in context)
+		fullWidth: {
+			true: { className: "w-full" },
+			false: { className: "w-auto" },
+		},
+	},
+	defaultVariants: {
+		variant: "primary",
+		size: "md",
+		disabled: false,
+		fullWidth: false,
+	},
+});
+
+// With 3 local variants
+const ButtonWith3Local = styled("button", {
+	context: LocalTestContext,
+	base: { className: "btn" },
+	variants: {
+		variant: {
+			primary: { className: "btn-primary" },
+			secondary: { className: "btn-secondary" },
+		},
+		size: {
+			sm: { className: "btn-sm" },
+			md: { className: "btn-md" },
+			lg: { className: "btn-lg" },
+		},
+		disabled: {
+			true: { className: "btn-disabled" },
+			false: { className: "btn-enabled" },
+		},
+		// Local variants (not in context)
+		fullWidth: {
+			true: { className: "w-full" },
+			false: { className: "w-auto" },
+		},
+		rounded: {
+			sm: { className: "rounded-sm" },
+			lg: { className: "rounded-lg" },
+		},
+		shadow: {
+			none: { className: "shadow-none" },
+			md: { className: "shadow-md" },
+		},
+	},
+	defaultVariants: {
+		variant: "primary",
+		size: "md",
+		disabled: false,
+		fullWidth: false,
+		rounded: "sm",
+		shadow: "none",
+	},
+});
+
+// Child that uses only context variants
+const LocalChildLabel = styled("span", {
+	context: LocalTestContext,
+	base: { className: "btn-label" },
+	variants: {
+		variant: {
+			primary: { className: "label-primary" },
+			secondary: { className: "label-secondary" },
+		},
+		size: {
+			sm: { className: "label-sm" },
+			md: { className: "label-md" },
+			lg: { className: "label-lg" },
+		},
+	},
+});
+
+group("Local Variants - Filtering Overhead", () => {
+	bench("no local variants (baseline)", () => {
+		createElement(ButtonAllContext, {
+			variant: "primary",
+			size: "md",
+			children: "Click",
+		});
+	}).baseline();
+
+	bench("1 local variant", () => {
+		createElement(ButtonWith1Local, {
+			variant: "primary",
+			size: "md",
+			fullWidth: true,
+			children: "Click",
+		});
+	});
+
+	bench("3 local variants", () => {
+		createElement(ButtonWith3Local, {
+			variant: "primary",
+			size: "md",
+			fullWidth: true,
+			rounded: "lg",
+			shadow: "md",
+			children: "Click",
+		});
+	});
+});
+
+group("Local Variants - Parent to Child Propagation", () => {
+	bench("no local - parent with child", () => {
+		createElement(
+			ButtonAllContext,
+			{ variant: "primary", size: "lg" },
+			createElement(LocalChildLabel, null, "Click"),
+		);
+	}).baseline();
+
+	bench("1 local - parent with child (local not propagated)", () => {
+		createElement(
+			ButtonWith1Local,
+			{ variant: "primary", size: "lg", fullWidth: true },
+			createElement(LocalChildLabel, null, "Click"),
+		);
+	});
+
+	bench("3 local - parent with child (locals not propagated)", () => {
+		createElement(
+			ButtonWith3Local,
+			{
+				variant: "primary",
+				size: "lg",
+				fullWidth: true,
+				rounded: "lg",
+				shadow: "md",
+			},
+			createElement(LocalChildLabel, null, "Click"),
+		);
+	});
+});
+
+// =============================================================================
 // Run all benchmarks
 // =============================================================================
 

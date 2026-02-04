@@ -55,6 +55,10 @@ function styled<T extends ElementType>(
     },
   }
   ```
+
+  <Note>
+    When using `context`, variants defined here but **not** in `createStyledContext()` become **local variants**. They work on this component but don't propagate to children. See [Local Variants](/concepts/context#local-variants).
+  </Note>
 </ParamField>
 
 <ParamField path="config.defaultVariants" type="object">

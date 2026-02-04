@@ -145,6 +145,52 @@ const ButtonLabel = styled(Text, {
 This is powerful for design systems where sensible defaults cascade through the
 component tree without repetition.
 
+### Local Variants (Non-Propagated)
+
+Variants defined in `styled()` but **not** in `createStyledContext()` are
+local—they only work on that specific component and don't propagate to children
+via context.
+
+```tsx
+const ButtonContext = createStyledContext({
+  variant: ["solid", "bordered"], // ← Propagates to children
+});
+
+const haptics = {
+  soft: { onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft) },
+  heavy: { onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) },
+};
+
+const ButtonRoot = styled(Pressable, {
+  context: ButtonContext,
+  variants: {
+    variant: { /* ... */ }, // ← Propagated (in context)
+    haptics, // ← Local only (not in context)
+  },
+  defaultVariants: {
+    variant: "solid",
+    haptics: "heavy", // ← Has a default, but won't propagate
+  },
+});
+
+const ButtonText = styled(Text, {
+  context: ButtonContext,
+  variants: {
+    variant: { /* ... */ }, // ← Receives "solid" from parent
+    // haptics is NOT available here - it's local to ButtonRoot
+  },
+});
+
+// Usage
+<ButtonRoot variant="bordered" haptics="soft">
+  <ButtonText>Click</ButtonText> {/* Gets variant="bordered", no haptics */}
+</ButtonRoot>;
+```
+
+Use local variants for: platform behaviors (haptics, animations), root-only
+interactions (press effects, gestures), variants that don't make sense on
+children.
+
 ### withSlots()
 
 Attaches child components as static properties for dot notation.
