@@ -5,7 +5,7 @@ import {
 	Pressable,
 	type PressableProps,
 } from "react-native";
-import { haptics } from "./haptics";
+// import { haptics } from "./haptics";
 import { Text } from "./Text";
 
 const ButtonContext = createStyledContext({
@@ -41,38 +41,24 @@ const ButtonRoot = styled(ButtonRootComponent, {
 			"centered h-16 w-full flex-row gap-2 rounded-2xl transition-all duration-300 active:scale-[0.98] active:opacity-60 disabled:opacity-50",
 	},
 	variants: {
-		haptics,
 		variant: {
-			solid: { className: "bg-primary" },
-			bordered: { className: "border-2 border-primary bg-transparent" },
-			"danger-bordered": {
-				className: "border-2 border-danger bg-transparent",
-			},
-			danger: { className: "bg-transparent" },
-			light: { className: "bg-transparent" },
-			flat: { className: "bg-primary/20" },
-			link: { className: "h-auto bg-transparent" },
+			solid: { className: "bg-accent" },
+			bordered: { className: "bg-default" },
+			// bordered2: { className: "bg-default" },
+		},
+		test: {
+			one: { className: "bg-accent" },
+			two: { className: "bg-accent" },
 		},
 	},
 	defaultVariants: {
-		variant: "flat",
-		haptics: "heavy",
+		// variant: "bordered",
+		// test: "one",
 	},
 });
 
 const ButtonIndicator = styled(ActivityIndicator, {
-	context: ButtonContext,
-	variants: {
-		variant: {
-			solid: { className: "text-surface" },
-			bordered: { className: "text-primary" },
-			"danger-bordered": { className: "text-danger" },
-			danger: { className: "text-danger" },
-			light: { className: "text-primary" },
-			flat: { className: "text-primary" },
-			link: { className: "text-primary" },
-		},
-	},
+	context: ButtonContext, // passei o context!
 });
 
 const ButtonText = styled(Text, {
@@ -89,6 +75,7 @@ const ButtonText = styled(Text, {
 			link: { className: "font-idonate-semibold text-primary" },
 		},
 	},
+	defaultVariants: {},
 });
 
 // const ButtonIcon = styled(Icon, {

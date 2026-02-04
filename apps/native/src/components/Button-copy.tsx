@@ -120,6 +120,23 @@ const ButtonRoot = styled(Pressable, {
 	base: {
 		className: "flex-row centered",
 	},
+	// variant: {
+	// 	variant: {
+	// 		variant: {
+	// 			primary: { className: "bg-accent" },
+	// 			secondary: { className: "bg-default" },
+	// 			tertiary: { className: "bg-default" },
+	// 			ghost: { className: "bg-transparent" },
+	// 			danger: { className: "bg-danger" },
+	// 			"danger-soft": { className: "bg-danger/20" },
+	// 		},
+	// 		primary: { className: "bg-accent" },
+	// 		secondary: { className: "bg-default" },
+	// 		tertiary: { className: "bg-default" },
+	// 		ghost: { className: "bg-transparent" },
+	// 		danger: { className: "bg-danger" },
+	// 		"danger-soft": { className: "bg-danger/20" },
+	// 	},
 	variants: {
 		variant: {
 			primary: { className: "bg-accent" },

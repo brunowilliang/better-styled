@@ -23,5 +23,11 @@ export type {
 } from "./src/types";
 
 // Export utilities for advanced usage
-export { cn, mergeFinalProps, mergeStyles } from "./src/utils";
+export {
+	cn,
+	mergeFinalProps,
+	mergeStyles,
+	resolveCompoundVariantProps,
+	resolveVariantProps,
+} from "./src/utils";
 export { withSlots } from "./src/withSlots";
