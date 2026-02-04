@@ -25,13 +25,44 @@ export type VariantsConfigFromInput<
 };
 
 /**
- * Config for local variants (not propagated via context)
- * These variants exist only on the component that defines them
+ * Validates variants config:
+ * - Keys in context: MUST use only values defined in context
+ * - Keys NOT in context: local variant, any values allowed with proper props type
+ * Intersection with VariantsConfigFromInput provides autocomplete for context keys
  */
-export type LocalVariantsConfig<T extends ElementType> = {
-	[variantName: string]: {
-		[value: string]: VariantProps<T>;
-	};
+export type ValidatedVariantsConfig<
+	T extends ElementType,
+	Input extends StyledContextInput,
+	V,
+> = {
+	[K in keyof V]: K extends keyof Input
+		? // Key exists in context - MUST use only context values
+			Input[K] extends readonly ["boolean"]
+			? { true?: VariantProps<T>; false?: VariantProps<T> }
+			: { [Val in Input[K][number]]?: VariantProps<T> }
+		: // Key NOT in context - local variant, infer values with proper props type
+			{ [Val in keyof V[K]]?: VariantProps<T> };
+} & VariantsConfigFromInput<T, Input>;
+
+/**
+ * Validates defaultVariants:
+ * - Keys in context: use context value types
+ * - Keys NOT in context: infer from variants passed
+ */
+export type ValidatedDefaultVariants<
+	Input extends StyledContextInput,
+	V,
+> = DefaultVariantsFromInput<Input> & {
+	[K in keyof V as K extends keyof Input ? never : K]?: V[K] extends Record<
+		infer Keys,
+		unknown
+	>
+		? "true" extends Keys
+			? boolean
+			: "false" extends Keys
+				? boolean
+				: Keys
+		: never;
 };
 
 /**
@@ -46,6 +77,22 @@ export type DefaultVariantsFromInput<Input extends StyledContextInput> = {
 };
 
 /**
+ * Infers variant props from local variants for component props
+ */
+export type InferLocalVariantProps<V> = {
+	[K in keyof V as K extends "children" ? never : K]?: V[K] extends Record<
+		infer Keys,
+		unknown
+	>
+		? "true" extends Keys
+			? boolean
+			: "false" extends Keys
+				? boolean
+				: Keys
+		: never;
+};
+
+/**
  * Props for styled component with context
  * Explicitly includes children to ensure it's always available
  * LocalV allows additional variants that are not propagated via context
@@ -53,10 +100,13 @@ export type DefaultVariantsFromInput<Input extends StyledContextInput> = {
 export type StyledPropsWithContext<
 	T extends ElementType,
 	CV extends Record<string, unknown>,
-	LocalV extends LocalVariantsConfig<T> = Record<string, never>,
+	LocalV extends Record<string, Record<string, unknown>> = Record<
+		string,
+		never
+	>,
 > = Omit<ComponentProps<T>, keyof CV | ExtractVariantKeys<LocalV>> &
 	Partial<CV> &
-	InferVariantProps<LocalV> & { children?: ReactNode };
+	InferLocalVariantProps<LocalV> & { children?: ReactNode };
 
 /**
  * Config type that requires context
@@ -66,16 +116,18 @@ export type StyledPropsWithContext<
 export type ConfigWithContext<
 	T extends ElementType,
 	Input extends StyledContextInput,
-	LocalV extends LocalVariantsConfig<T> = Record<string, never>,
+	LocalV extends Record<string, Record<string, unknown>> = Record<
+		string,
+		never
+	>,
 > = {
 	context: StyledContext<Input>;
 	base?: VariantProps<T>;
-	variants?: VariantsConfigFromInput<T, Input> & LocalV;
-	defaultVariants?: DefaultVariantsFromInput<Input> &
-		InferDefaultVariants<LocalV>;
+	variants?: ValidatedVariantsConfig<T, Input, LocalV>;
+	defaultVariants?: ValidatedDefaultVariants<Input, LocalV>;
 	compoundVariants?: Array<
 		Partial<InferContextValue<Input>> &
-			Partial<InferVariantProps<LocalV>> & { props: VariantProps<T> }
+			Partial<InferLocalVariantProps<LocalV>> & { props: VariantProps<T> }
 	>;
 };
 
@@ -193,7 +245,10 @@ export type StyledPropsWithoutContext<
 export type StyledComponentWithContext<
 	T extends ElementType,
 	Input extends StyledContextInput,
-	LocalV extends LocalVariantsConfig<T> = Record<string, never>,
+	LocalV extends Record<string, Record<string, unknown>> = Record<
+		string,
+		never
+	>,
 > = ((
 	props: StyledPropsWithContext<T, InferContextValue<Input>, LocalV>,
 ) => ReactNode) & {

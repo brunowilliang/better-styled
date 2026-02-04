@@ -13,7 +13,6 @@ import type { VariantProps } from "./types/shared";
 import type {
 	ConfigWithContext,
 	ConfigWithoutContext,
-	LocalVariantsConfig,
 	StyledPropsWithContext,
 	StyledPropsWithoutContext,
 	VariantsConfig,
@@ -41,7 +40,10 @@ import {
 export function styled<
 	T extends ElementType,
 	const Input extends StyledContextInput,
-	const LocalV extends LocalVariantsConfig<T> = Record<string, never>,
+	const LocalV extends Record<string, Record<string, unknown>> = Record<
+		string,
+		never
+	>,
 >(
 	component: T,
 	config: ConfigWithContext<T, Input, LocalV>,
