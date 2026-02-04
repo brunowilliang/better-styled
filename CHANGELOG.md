@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 
 
+## [1.1.0](https://github.com/brunowilliang/better-styled/compare/v1.0.1...v1.1.0) (2026-02-04)
+
+### Features
+
+* add local variants support (non-propagated via context) ([851dc7a](https://github.com/brunowilliang/better-styled/commit/851dc7a015809ca9adde731fb37e2232ea89ed97))
+
+### Bug Fixes
+
+* correct npm publish tag for stable releases ([c17a48a](https://github.com/brunowilliang/better-styled/commit/c17a48a1afbc8de3f6d72c83eb7ce9879cae624b))
+
+### Documentation
+
+* add defaultVariants propagation section to skill.md ([08f5dee](https://github.com/brunowilliang/better-styled/commit/08f5dee7e2aea0c57de833195069f9d2647feaa7))
+
 ## [1.0.1](https://github.com/brunowilliang/better-styled/compare/v1.0.0...v1.0.1) (2026-02-03)
 
 ### Bug Fixes

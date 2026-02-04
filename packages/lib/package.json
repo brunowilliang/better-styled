@@ -1,7 +1,7 @@
 {
 	"name": "better-styled",
 	"description": "A powerful library for creating React/React Native components with variants, slots and context",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
