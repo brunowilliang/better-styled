@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [1.3.0](https://github.com/brunowilliang/better-styled/compare/v1.2.0...v1.3.0) (2026-02-06)
+
+### Features
+
+* add styledConfig() for typed shared configs between styled components ([ac1ec8c](https://github.com/brunowilliang/better-styled/commit/ac1ec8c632e4fca0afda02bb1e6b109203e2c801))
+
 ## [1.2.0](https://github.com/brunowilliang/better-styled/compare/v1.1.0...v1.2.0) (2026-02-04)
 
 ### Features
