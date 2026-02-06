@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [1.3.1](https://github.com/brunowilliang/better-styled/compare/v1.3.0...v1.3.1) (2026-02-06)
+
+### Bug Fixes
+
+* include ref in styled component props for class components ([caea8ea](https://github.com/brunowilliang/better-styled/commit/caea8ea96c4c516102d1f1d64ceedef56d3c9224))
+
 ## [1.3.0](https://github.com/brunowilliang/better-styled/compare/v1.2.0...v1.3.0) (2026-02-06)
 
 ### Features
