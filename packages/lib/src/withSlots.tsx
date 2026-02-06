@@ -1,4 +1,4 @@
-import { type ForwardRefExoticComponent, forwardRef } from "react";
+import { createElement, type ElementType } from "react";
 import type {
 	DecoratedComponent,
 	SlotProps,
@@ -37,9 +37,9 @@ export const withSlots = <C extends DecoratedComponent, S extends SlotProps>(
 
 	// If already decorated, clone to avoid shared mutations
 	if (decoratedComponents.has(component)) {
-		const ClonedComponent = forwardRef((props, ref) => {
-			return (component as Function)(props, ref);
-		}) as ForwardRefExoticComponent<unknown> & DecoratedComponent;
+		const ClonedComponent = ((props: Record<string, unknown>) => {
+			return createElement(component as unknown as ElementType, props);
+		}) as DecoratedComponent & { displayName?: string };
 
 		// Copy existing static properties
 		for (const key of Object.keys(component)) {

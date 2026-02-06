@@ -1,4 +1,4 @@
-import type { ComponentProps, ElementType, ReactNode } from "react";
+import type { ComponentPropsWithRef, ElementType, ReactNode } from "react";
 import type {
 	InferContextValue,
 	StyledContext,
@@ -104,7 +104,7 @@ export type StyledPropsWithContext<
 		string,
 		never
 	>,
-> = Omit<ComponentProps<T>, keyof CV | ExtractVariantKeys<LocalV>> &
+> = Omit<ComponentPropsWithRef<T>, keyof CV | ExtractVariantKeys<LocalV>> &
 	Partial<CV> &
 	InferLocalVariantProps<LocalV> & { children?: ReactNode };
 
@@ -229,7 +229,7 @@ type ExtractVariantKeys<V> =
 export type StyledPropsWithoutContext<
 	T extends ElementType,
 	V extends VariantsConfig<T>,
-> = Omit<ComponentProps<T>, ExtractVariantKeys<V>> & {
+> = Omit<ComponentPropsWithRef<T>, ExtractVariantKeys<V>> & {
 	[K in ExtractVariantKeys<V>]?: HasBooleanKeys<V[K]> extends true
 		? boolean
 		: StringKeys<V[K]>;

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { fireEvent, render, screen } from "@better-styled/testing";
-import { createStyledContext, styled } from "better-styled";
+import { createStyledContext, styled, withSlots } from "better-styled";
+import { useRef } from "react";
 
 describe("styled", () => {
 	describe("basic rendering", () => {
@@ -994,6 +995,149 @@ describe("styled", () => {
 			expect(el).toHaveClass("v8-b");
 			expect(el).toHaveClass("v9-a");
 			expect(el).toHaveClass("v10-b");
+		});
+	});
+
+	describe("ref forwarding", () => {
+		it("should forward ref to native HTML element", () => {
+			const Button = styled("button", {
+				base: { className: "btn" },
+			});
+
+			const TestComponent = () => {
+				const ref = useRef<HTMLButtonElement>(null);
+				return (
+					<div>
+						<Button ref={ref} data-testid="btn">
+							Click
+						</Button>
+						<button
+							type="button"
+							data-testid="check"
+							onClick={() => {
+								ref.current?.setAttribute("data-ref-works", "true");
+							}}
+						>
+							Check
+						</button>
+					</div>
+				);
+			};
+
+			render(<TestComponent />);
+			screen.getByTestId("check").click();
+			expect(screen.getByTestId("btn")).toHaveAttribute(
+				"data-ref-works",
+				"true",
+			);
+		});
+
+		it("should forward ref with variants", () => {
+			const Input = styled("input", {
+				base: { className: "input" },
+				variants: {
+					size: {
+						sm: { className: "input-sm" },
+						lg: { className: "input-lg" },
+					},
+				},
+			});
+
+			const TestComponent = () => {
+				const ref = useRef<HTMLInputElement>(null);
+				return (
+					<div>
+						<Input ref={ref} data-testid="input" size="lg" />
+						<button
+							type="button"
+							data-testid="focus"
+							onClick={() => ref.current?.focus()}
+						>
+							Focus
+						</button>
+					</div>
+				);
+			};
+
+			render(<TestComponent />);
+			screen.getByTestId("focus").click();
+			expect(document.activeElement).toBe(screen.getByTestId("input"));
+		});
+
+		it("should forward ref through styled + withSlots", () => {
+			const ButtonRoot = styled("button", {
+				base: { className: "btn" },
+			});
+			const ButtonLabel = styled("span", {
+				base: { className: "btn-label" },
+			});
+			const Button = withSlots(ButtonRoot, { Label: ButtonLabel });
+
+			const TestComponent = () => {
+				const ref = useRef<HTMLButtonElement>(null);
+				return (
+					<div>
+						<Button ref={ref} data-testid="btn">
+							<Button.Label>Click</Button.Label>
+						</Button>
+						<button
+							type="button"
+							data-testid="check"
+							onClick={() => {
+								ref.current?.setAttribute("data-ref-works", "true");
+							}}
+						>
+							Check
+						</button>
+					</div>
+				);
+			};
+
+			render(<TestComponent />);
+			screen.getByTestId("check").click();
+			expect(screen.getByTestId("btn")).toHaveAttribute(
+				"data-ref-works",
+				"true",
+			);
+		});
+
+		it("should forward ref with context-based styled components", () => {
+			const Ctx = createStyledContext({
+				variant: ["a", "b"],
+			});
+
+			const Root = styled("div", {
+				context: Ctx,
+				base: { className: "root" },
+				variants: {
+					variant: {
+						a: { className: "variant-a" },
+						b: { className: "variant-b" },
+					},
+				},
+			});
+
+			const TestComponent = () => {
+				const ref = useRef<HTMLDivElement>(null);
+				return (
+					<div>
+						<Root ref={ref} data-testid="root" variant="a">
+							Content
+						</Root>
+						<button
+							type="button"
+							data-testid="check"
+							onClick={() => ref.current?.setAttribute("data-ref", "ok")}
+						>
+							Check
+						</button>
+					</div>
+				);
+			};
+
+			render(<TestComponent />);
+			screen.getByTestId("check").click();
+			expect(screen.getByTestId("root")).toHaveAttribute("data-ref", "ok");
 		});
 	});
 });
