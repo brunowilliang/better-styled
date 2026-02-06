@@ -6,6 +6,7 @@
     "better-styled": "workspace:*",
     "expo": "~54.0.22",
     "expo-haptics": "~15.0.8",
+    "expo-image": "~3.0.11",
     "expo-router": "~6.0.14",
     "expo-status-bar": "~3.0.8",
     "pressto": "^0.6.0",

@@ -93,6 +93,39 @@ function ButtonGroup({ size }: Pick<ButtonProps, "size">) {
 }
 ```
 
+## Shared Configs
+
+When multiple components share the same variants and context, use `styledConfig()` to create a single typed config:
+
+```tsx
+import { createStyledContext, styled, styledConfig, withSlots } from "better-styled";
+
+const ImageCtx = createStyledContext({
+  variant: ["solid", "bordered", "light"],
+});
+
+// Single config validated against both components
+const config = styledConfig([UniwindImage, UniwindImageBg], {
+  context: ImageCtx,
+  variants: {
+    variant: {
+      solid: { className: "bg-black" },
+      bordered: { className: "border-2" },
+      light: { className: "bg-gray-100" },
+    },
+  },
+});
+
+const StyledImage = styled(UniwindImage, config);
+const StyledImageBg = styled(UniwindImageBg, config);
+```
+
+`styledConfig()` uses the same type inference as `styled()` — no generics needed. TypeScript validates that the config is compatible with **both** components simultaneously.
+
+<Note>
+  `styledConfig()` is an identity function — it returns the config unchanged. It exists purely for type inference, with zero runtime cost.
+</Note>
+
 ## Extending Components
 
 When you wrap a styled component, types flow through:

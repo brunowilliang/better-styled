@@ -9,7 +9,9 @@
 		"bench:styled": "bun run src/styled.bench.ts",
 		"bench:context": "bun run src/createStyledContext.bench.ts",
 		"bench:slots": "bun run src/withSlots.bench.ts",
-		"bench:integration": "bun run src/integration.bench.ts"
+		"bench:integration": "bun run src/integration.bench.ts",
+		"bench:config": "bun run src/styledConfig.bench.ts",
+		"bench:utils": "bun run src/utils.bench.ts"
 	},
 	"dependencies": {
 		"mitata": "^1.0.34"

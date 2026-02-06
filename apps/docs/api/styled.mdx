@@ -7,10 +7,22 @@ description: "Creates a styled component with variant support. The core function
 ## Signature
 
 ```tsx
-function styled<T extends ElementType>(
-  component: T,
-  config: StyledConfig<T>
-): StyledComponent<T>
+// With context
+function styled<T>(component: T, config: {
+  context: StyledContext,
+  base?: Props<T>,
+  variants?: { [name: string]: { [value: string]: Props<T> } },
+  defaultVariants?: { [name: string]: string | boolean },
+  compoundVariants?: CompoundVariant[],
+}): StyledComponent<T>
+
+// Without context
+function styled<T>(component: T, config: {
+  base?: Props<T>,
+  variants?: { [name: string]: { [value: string]: Props<T> } },
+  defaultVariants?: { [name: string]: string | boolean },
+  compoundVariants?: CompoundVariant[],
+}): StyledComponent<T>
 ```
 
 ## Parameters
@@ -226,6 +238,7 @@ Priority order (lowest to highest):
 
 ## See Also
 
+- [styledConfig()](/api/styled-config) — Share a config between multiple components
 - [styled() Concept Guide](/concepts/styled)
 - [Variants](/concepts/variants)
 - [Context](/concepts/context)

@@ -75,6 +75,7 @@
         "group": "API Reference",
         "pages": [
           "api/styled",
+          "api/styled-config",
           "api/create-styled-context",
           "api/with-slots",
           "api/utilities"

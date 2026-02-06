@@ -14,7 +14,7 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "bench": "turbo run bench",
-    "docs": "cd apps/docs && npx mintlify dev",
+    "docs": "cd apps/docs && mint dev",
     "lint": "biome check ./packages/lib",
     "format": "biome format ./packages/lib --write",
     "release": "release-it",

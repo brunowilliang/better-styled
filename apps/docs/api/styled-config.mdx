@@ -1,0 +1,91 @@
+---
+title: "API reference for the styledConfig function"
+sidebarTitle: "styledConfig()"
+description: "Creates a typed config object shared between multiple styled components. Same type inference as styled() — zero generics needed."
+---
+
+## Signature
+
+```tsx
+// With context
+function styledConfig<T, U>(
+  components: [T, U],
+  config: {
+    context: StyledContext,
+    base?: Props<T> & Props<U>,
+    variants?: { [name: string]: { [value: string]: Props<T> & Props<U> } },
+    defaultVariants?: { [name: string]: string | boolean },
+    compoundVariants?: CompoundVariant[],
+  }
+): typeof config
+
+// Without context
+function styledConfig<T, U>(
+  components: [T, U],
+  config: {
+    base?: Props<T> & Props<U>,
+    variants?: { [name: string]: { [value: string]: Props<T> & Props<U> } },
+    defaultVariants?: { [name: string]: string | boolean },
+    compoundVariants?: CompoundVariant[],
+  }
+): typeof config
+```
+
+## Parameters
+
+<ParamField path="components" type="[ElementType, ElementType]" required>
+  A tuple of two components that will share this config. Used only for type inference — not stored or used at runtime.
+
+  ```tsx
+  styledConfig([UniwindImage, UniwindImageBg], { ... })
+  ```
+</ParamField>
+
+<ParamField path="config" type="object" required>
+  Configuration object. Identical structure to `styled()` config — see [styled() Config Properties](/api/styled#config-properties) for details.
+
+  The config is validated against **both** components. If a variant value sets a prop that doesn't exist on one of the components, TypeScript will error.
+</ParamField>
+
+## Returns
+
+The exact same config object (identity function). Zero runtime overhead — exists purely for type inference.
+
+## Example
+
+```tsx
+const config = styledConfig([UniwindImage, UniwindImageBg], {
+  context: ImageCtx,
+  base: { className: "rounded-lg" },
+  variants: {
+    variant: {
+      solid: { className: "bg-black" },
+      bordered: { className: "border-2" },
+    },
+  },
+});
+
+const StyledImage = styled(UniwindImage, config);
+const StyledImageBg = styled(UniwindImageBg, config);
+```
+
+## Type Safety
+
+The config is validated against both components simultaneously. If a variant sets a prop that only exists on one component, TypeScript will catch it:
+
+```tsx
+// ❌ TypeScript error — "onLoad" exists on Image but not on Text
+const config = styledConfig([Image, Text], {
+  variants: {
+    variant: {
+      solid: { onLoad: () => {} },
+    },
+  },
+});
+```
+
+## See Also
+
+- [Shared Config](/concepts/context#shared-config) — When and why to use styledConfig
+- [styled()](/api/styled) — Create individual styled components
+- [TypeScript Guide](/guides/typescript#shared-configs) — Type inference details

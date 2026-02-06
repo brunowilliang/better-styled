@@ -1,28 +1,5 @@
 export { createStyledContext } from "./src/createStyledContext";
-export { styled } from "./src/styled";
-// Export types for consumers
-export type {
-	// Shared
-	AllowedProps,
-	// styled
-	CompoundVariant,
-	ConfigWithContext,
-	ConfigWithoutContext,
-	// withSlots
-	DecoratedComponent,
-	// createStyledContext
-	InferContextValue,
-	SlotProps,
-	StyledComponentWithContext,
-	StyledComponentWithoutContext,
-	StyledContext,
-	StyledContextInput,
-	VariantProps,
-	VariantsConfig,
-	WithSlotsResult,
-} from "./src/types";
-
-// Export utilities for advanced usage
+export { styled, styledConfig } from "./src/styled";
 export {
 	cn,
 	mergeFinalProps,

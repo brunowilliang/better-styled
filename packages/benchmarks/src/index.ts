@@ -9,6 +9,8 @@
  *   bun run bench:context
  *   bun run bench:slots
  *   bun run bench:integration
+ *   bun run bench:config
+ *   bun run bench:utils
  */
 
 console.log(
@@ -43,6 +45,18 @@ console.log();
 console.log("Running integration benchmarks...");
 console.log("─".repeat(65));
 await import("./integration.bench");
+
+console.log();
+console.log();
+console.log("Running styledConfig() benchmarks...");
+console.log("─".repeat(65));
+await import("./styledConfig.bench");
+
+console.log();
+console.log();
+console.log("Running utils benchmarks...");
+console.log("─".repeat(65));
+await import("./utils.bench");
 
 console.log();
 console.log(

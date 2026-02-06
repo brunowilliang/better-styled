@@ -355,6 +355,81 @@ Local variants work great with function props. When you define `onPress` in a va
 // → Haptics fire, then "clicked" logs
 ```
 
+## Shared Config
+
+When multiple components share the same context and variants, you end up duplicating the config:
+
+```tsx
+// ❌ Duplicated config
+const StyledImage = styled(UniwindImage, {
+  context: ImageCtx,
+  variants: {
+    variant: {
+      solid: { className: "bg-black" },
+      bordered: { className: "border-2 border-gray-300" },
+    },
+  },
+});
+
+const StyledImageBg = styled(UniwindImageBg, {
+  context: ImageCtx,
+  variants: {
+    variant: {
+      solid: { className: "bg-black" },
+      bordered: { className: "border-2 border-gray-300" },
+    },
+  },
+});
+```
+
+Use `styledConfig()` to create a single config validated against both components:
+
+```tsx
+import { createStyledContext, styled, styledConfig, withSlots } from "better-styled";
+import { Image as ExpoImage, ImageBackground } from "expo-image";
+import { withUniwind } from "uniwind";
+
+const UniwindImage = withUniwind(ExpoImage);
+const UniwindImageBg = withUniwind(ImageBackground);
+
+const ImageCtx = createStyledContext({
+  variant: ["solid", "bordered", "light"],
+});
+
+// ✅ Single source of truth
+const config = styledConfig([UniwindImage, UniwindImageBg], {
+  context: ImageCtx,
+  base: { className: "rounded-lg" },
+  variants: {
+    variant: {
+      solid: { className: "bg-black" },
+      bordered: { className: "border-2 border-gray-300" },
+      light: { className: "bg-gray-100" },
+    },
+  },
+  defaultVariants: {
+    variant: "solid",
+  },
+});
+
+const ImageBase = styled(UniwindImage, config);
+const ImageBackgroundBase = styled(UniwindImageBg, config);
+
+export const Image = withSlots(ImageBase, {
+  Background: ImageBackgroundBase,
+});
+```
+
+`styledConfig()` is an identity function — it returns the config unchanged with zero runtime overhead. It exists purely so TypeScript can validate the config against both components and give you full autocomplete.
+
+<Note>
+  `styledConfig()` uses the same type inference as `styled()`. No generics needed — just pass the components array and the config.
+</Note>
+
+<Card title="styledConfig() API Reference" icon="arrow-right" href="/api/styled-config">
+  Signature, parameters, and type safety details
+</Card>
+
 ## Nested Contexts
 
 If you nest components with the same context, the nearest parent wins.

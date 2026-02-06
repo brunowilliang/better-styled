@@ -1,30 +1,26 @@
 ---
-title: "API reference for utility functions"
-sidebarTitle: "Utilities"
-description: "cn(), mergeFinalProps(), and mergeStyles() - utility functions used internally that you can use directly."
+title: "API reference for cn()"
+sidebarTitle: "cn()"
+description: "Merges class names with Tailwind conflict resolution. Combines clsx and tailwind-merge."
 ---
 
-## cn()
-
-Merges class names with Tailwind conflict resolution.
-
-### Signature
+## Signature
 
 ```tsx
 function cn(...inputs: ClassValue[]): string | undefined
 ```
 
-### Parameters
+## Parameters
 
 <ParamField path="inputs" type="ClassValue[]">
   Any number of class values: strings, arrays, objects, undefined, null, or false.
 </ParamField>
 
-### Returns
+## Returns
 
 A merged class string, or `undefined` if the result is empty.
 
-### Example
+## Example
 
 ```tsx
 import { cn } from "better-styled";
@@ -42,7 +38,7 @@ cn();
 // → undefined (not empty string)
 ```
 
-### How It Works
+## How It Works
 
 `cn` combines [clsx](https://github.com/lukeed/clsx) for conditional classes with [tailwind-merge](https://github.com/dcastil/tailwind-merge) for conflict resolution.
 
@@ -55,115 +51,17 @@ cn("p-4", "p-8");  // → "p-8" not "p-4 p-8"
 cn("text-sm", "text-lg");  // → "text-lg"
 ```
 
----
+## When to Use
 
-## mergeFinalProps()
+Most of the time, you won't need `cn()` directly — `styled()` handles class merging for you.
 
-Merges multiple prop objects with special handling for className, style, and functions.
-
-### Signature
+Use it when you need to merge classes outside of a styled component:
 
 ```tsx
-function mergeFinalProps<T>(...sources: Array<Partial<T> | undefined>): T
-```
-
-### Parameters
-
-<ParamField path="sources" type="Array<Partial<T> | undefined>">
-  Any number of partial prop objects. Later objects override earlier ones.
-</ParamField>
-
-### Returns
-
-A merged props object.
-
-### Example
-
-```tsx
-import { mergeFinalProps } from "better-styled";
-
-const result = mergeFinalProps(
-  { className: "p-4", onClick: () => console.log("a") },
-  { className: "p-8", onClick: () => console.log("b") },
-  { className: "m-2" }
-);
-
-// result:
-// {
-//   className: "p-8 m-2",  // Merged with cn()
-//   onClick: [Function],   // Composed: logs "a" then "b"
-// }
-```
-
-### Merge Behavior
-
-| Prop Type | Behavior |
-|-----------|----------|
-| `className` | 🔀 Merged using `cn()` |
-| `style` | 🔀 Merged using `Object.assign` |
-| Functions | ⛓️ Composed (all execute in order) |
-| Others | ⬆️ Later value wins |
-
----
-
-## mergeStyles()
-
-Merges style objects.
-
-### Signature
-
-```tsx
-function mergeStyles(
-  ...styles: Array<Record<string, unknown> | undefined>
-): Record<string, unknown> | undefined
-```
-
-### Parameters
-
-<ParamField path="styles" type="Array<object | undefined>">
-  Style objects to merge. Later objects override earlier ones.
-</ParamField>
-
-### Returns
-
-A merged style object, or `undefined` if all inputs are undefined.
-
-### Example
-
-```tsx
-import { mergeStyles } from "better-styled";
-
-mergeStyles(
-  { padding: 16, margin: 8 },
-  { padding: 32 }
-);
-// → { padding: 32, margin: 8 }
-
-mergeStyles(undefined, { color: "red" });
-// → { color: "red" }
-
-mergeStyles(undefined, undefined);
-// → undefined
-```
-
----
-
-## When to Use These
-
-Most of the time, you won't need these utilities directly - `styled()` handles merging for you.
-
-✅ Use them when:
-- Building custom abstractions on top of better-styled
-- You need to merge props or classes outside of a styled component
-- You want consistent merging behavior with the library
-
-```tsx
-// Custom component that needs to merge props
-function CustomButton({ className, style, ...props }) {
+function CustomButton({ className, ...props }) {
   return (
     <button
-      className={cn("base-button", className)}
-      style={mergeStyles({ transition: "all 0.2s" }, style)}
+      className={cn("base-button px-4 py-2", className)}
       {...props}
     />
   );

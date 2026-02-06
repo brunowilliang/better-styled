@@ -476,14 +476,20 @@ group("Integration - Full Resolution Flow", () => {
 	bench("medium: base + 3 variants + compounds + direct", () => {
 		const activeVariants = { variant: "primary", size: "lg", disabled: true };
 		const variantProps = resolveVariantProps(variants, activeVariants);
-		const compoundProps = resolveCompoundVariantProps(compounds, activeVariants);
+		const compoundProps = resolveCompoundVariantProps(
+			compounds,
+			activeVariants,
+		);
 		mergeFinalProps(base, variantProps, compoundProps, directProps);
 	});
 
 	bench("complex: full flow with tailwind conflicts", () => {
 		const activeVariants = { variant: "danger", size: "lg", disabled: true };
 		const variantProps = resolveVariantProps(variants, activeVariants);
-		const compoundProps = resolveCompoundVariantProps(compounds, activeVariants);
+		const compoundProps = resolveCompoundVariantProps(
+			compounds,
+			activeVariants,
+		);
 		const userProps = {
 			className: "bg-green-500 px-8",
 			style: { fontWeight: "bold" },

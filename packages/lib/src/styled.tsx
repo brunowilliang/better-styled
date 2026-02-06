@@ -174,3 +174,55 @@ export function styled<T extends ElementType>(
 
 	return StyledComponent;
 }
+
+// ============================================================================
+// styledConfig - Identity function for typed shared configs
+// ============================================================================
+
+/**
+ * Creates a typed config that can be shared between multiple styled components.
+ * Uses the same type inference as styled() — zero generics needed.
+ *
+ * @example
+ * const config = styledConfig([UniwindImage, UniwindImageBg], {
+ *   context: ImageCtx,
+ *   base: { className: "rounded-lg" },
+ *   variants: {
+ *     variant: {
+ *       solid: { className: "bg-black" },
+ *     },
+ *   },
+ * });
+ *
+ * const StyledImage = styled(UniwindImage, config);
+ * const StyledImageBg = styled(UniwindImageBg, config);
+ */
+export function styledConfig<
+	T extends ElementType,
+	U extends ElementType,
+	const Input extends StyledContextInput,
+	const LocalV extends Record<string, Record<string, unknown>> = Record<
+		string,
+		never
+	>,
+>(
+	components: [T, U],
+	config: ConfigWithContext<T, Input, LocalV> &
+		ConfigWithContext<U, Input, LocalV>,
+): ConfigWithContext<T, Input, LocalV> & ConfigWithContext<U, Input, LocalV>;
+
+export function styledConfig<
+	T extends ElementType,
+	U extends ElementType,
+	const V extends VariantsConfig<T> & VariantsConfig<U>,
+>(
+	components: [T, U],
+	config: ConfigWithoutContext<T, V> & ConfigWithoutContext<U, V>,
+): ConfigWithoutContext<T, V> & ConfigWithoutContext<U, V>;
+
+export function styledConfig(
+	_components: ElementType[],
+	config: Record<string, unknown>,
+) {
+	return config;
+}
