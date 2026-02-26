@@ -44,13 +44,32 @@ describe("mergeStyles", () => {
 	});
 
 	it("should return undefined for empty objects", () => {
-		expect(mergeStyles({})).toBeUndefined();
+		const emptyStyle = {};
+		expect(mergeStyles(emptyStyle)).toBe(emptyStyle);
 		expect(mergeStyles({}, {})).toBeUndefined();
 	});
 
 	it("should handle single style object", () => {
-		const result = mergeStyles({ padding: 10 });
+		const style = { padding: 10 };
+		const result = mergeStyles(style);
+		expect(result).toBe(style);
 		expect(result).toEqual({ padding: 10 });
+	});
+
+	it("should preserve animated style references by returning array", () => {
+		const animatedStyle = {
+			transform: [{ translateY: 10 }],
+			get _requiresAnimatedComponent() {
+				throw new Error("animated marker getter should never be read");
+			},
+		};
+
+		const baseStyle = { borderCurve: "continuous" };
+		const result = mergeStyles(baseStyle, animatedStyle);
+
+		expect(Array.isArray(result)).toBe(true);
+		expect(result).toEqual([baseStyle, animatedStyle]);
+		expect((result as unknown[])[1]).toBe(animatedStyle);
 	});
 
 	it("should give priority to later values (last wins)", () => {

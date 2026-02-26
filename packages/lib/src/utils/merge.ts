@@ -2,9 +2,83 @@ import type { CSSProperties } from "react";
 import { cn } from "./cn";
 
 type StyleObject = CSSProperties | Record<string, unknown>;
+type StyleValue = StyleObject | number;
+type StyleInput = StyleValue | StyleInput[] | null | false | undefined;
 
 const isFunction = (value: unknown): value is Function =>
 	typeof value === "function";
+
+const isObjectLike = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null;
+
+const hasOnlyEnumerableStringDataKeys = (value: object): boolean => {
+	try {
+		if (Object.getOwnPropertySymbols(value).length > 0) {
+			return false;
+		}
+
+		const descriptors = Object.getOwnPropertyDescriptors(value);
+		const ownEnumerableKeys = Object.keys(value);
+		const descriptorKeys = Object.keys(descriptors);
+
+		if (descriptorKeys.length !== ownEnumerableKeys.length) {
+			return false;
+		}
+
+		for (const key of descriptorKeys) {
+			const descriptor = descriptors[key];
+			if (!descriptor || !descriptor.enumerable) {
+				return false;
+			}
+
+			// Accessor props (get/set) can trigger runtime errors when merged.
+			if ("get" in descriptor || "set" in descriptor) {
+				return false;
+			}
+		}
+
+		return true;
+	} catch {
+		return false;
+	}
+};
+
+const hasRequiresAnimatedComponentMarker = (value: object): boolean => {
+	try {
+		return "_requiresAnimatedComponent" in value;
+	} catch {
+		return true;
+	}
+};
+
+const isPlainObject = (value: unknown): value is StyleObject => {
+	if (!isObjectLike(value)) {
+		return false;
+	}
+
+	const prototype = Object.getPrototypeOf(value);
+	return prototype === Object.prototype || prototype === null;
+};
+
+const isMergeableStyleObject = (value: unknown): value is StyleObject =>
+	isPlainObject(value) &&
+	!hasRequiresAnimatedComponentMarker(value) &&
+	hasOnlyEnumerableStringDataKeys(value);
+
+const flattenStyleInput = (style: StyleInput, result: StyleValue[]): void => {
+	if (style === undefined || style === null || style === false) {
+		return;
+	}
+
+	if (Array.isArray(style)) {
+		for (const nestedStyle of style) {
+			flattenStyleInput(nestedStyle, result);
+		}
+		return;
+	}
+
+	result.push(style);
+};
 
 /**
  * Composes multiple functions into one that calls them in sequence.
@@ -35,16 +109,35 @@ const composeFunctions = (...functions: unknown[]): Function => {
  * Returns undefined if the result is empty.
  */
 export const mergeStyles = (
-	...styles: (StyleObject | undefined)[]
-): StyleObject | undefined => {
-	const validStyles = styles.filter(Boolean) as StyleObject[];
+	...styles: StyleInput[]
+): StyleValue | StyleValue[] | undefined => {
+	const flattenedStyles: StyleValue[] = [];
+	for (const style of styles) {
+		flattenStyleInput(style, flattenedStyles);
+	}
 
-	if (validStyles.length === 0) {
+	if (flattenedStyles.length === 0) {
 		return undefined;
 	}
 
-	const merged = Object.assign({}, ...validStyles);
-	return Object.keys(merged).length > 0 ? merged : undefined;
+	if (flattenedStyles.length === 1) {
+		return flattenedStyles[0];
+	}
+
+	const shouldMergeAsObject = flattenedStyles.every(isMergeableStyleObject);
+
+	if (shouldMergeAsObject) {
+		try {
+			const merged = Object.assign({}, ...flattenedStyles);
+			return Object.keys(merged).length > 0 ? merged : undefined;
+		} catch {
+			// Defensive fallback for proxy/accessor-based styles (e.g. Reanimated).
+			return flattenedStyles;
+		}
+	}
+
+	// Preserve reference identity for animated/non-plain styles (e.g. Reanimated).
+	return flattenedStyles;
 };
 
 /**
@@ -56,7 +149,7 @@ export const mergeFinalProps = <P extends Record<string, unknown>>(
 	...propSources: (Partial<P> | undefined)[]
 ): P => {
 	const finalProps: Record<string, unknown> = {};
-	const allStyles: StyleObject[] = [];
+	const allStyles: StyleInput[] = [];
 	const allClassNames: (string | undefined)[] = [];
 	const functionsToCompose: Record<string, Function[]> = {};
 
@@ -67,7 +160,7 @@ export const mergeFinalProps = <P extends Record<string, unknown>>(
 			if (value === undefined) continue;
 
 			if (key === "style" && value) {
-				allStyles.push(value as StyleObject);
+				allStyles.push(value as StyleInput);
 			} else if (key === "className" && typeof value === "string") {
 				allClassNames.push(value);
 			} else if (isFunction(value)) {
@@ -83,7 +176,7 @@ export const mergeFinalProps = <P extends Record<string, unknown>>(
 
 	// Merge styles
 	const mergedStyle = mergeStyles(...allStyles);
-	if (mergedStyle) {
+	if (mergedStyle !== undefined) {
 		finalProps.style = mergedStyle;
 	}
 
