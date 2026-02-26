@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [1.3.2](https://github.com/brunowilliang/better-styled/compare/v1.3.1...v1.3.2) (2026-02-26)
+
+### Bug Fixes
+
+* preserve animated style references in style merge ([ef92f45](https://github.com/brunowilliang/better-styled/commit/ef92f450023498156498f4a92bb13e5e9d79bd46))
+
 ## [1.3.1](https://github.com/brunowilliang/better-styled/compare/v1.3.0...v1.3.1) (2026-02-06)
 
 ### Bug Fixes
