@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  Type-safe styled components with variant propagation for React and Re
+  Type-safe styled components with variant propagation for React and React Native
 </p>
 
 <p align="center">
